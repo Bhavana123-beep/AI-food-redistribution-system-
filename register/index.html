@@ -4,183 +4,270 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register - AI Food Rescue Network</title>
+    <title>Join the Smart Food Redistribution Network - AI Food Rescue</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome for icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="styles.css">
 </head>
 
 <body>
-    <div class="background-overlay"></div>
 
-    <div class="register-container">
-        <div class="register-card">
-            <div class="card-header">
-                <a href="../index.html" class="back-link" aria-label="Go back to home">
-                    <i class="fa-solid fa-arrow-left"></i>
+    <!-- Background Decorative Elements -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <div class="split-layout">
+
+        <!-- Left Side: Hero Section / Graphic -->
+        <div class="hero-section">
+            <div class="hero-content">
+                <a href="../index.html" class="logo">
+                    <div class="logo-icon"><i class="fa-solid fa-leaf"></i></div>
+                    <span class="logo-text">Food<span>Rescue</span></span>
                 </a>
-                <div class="logo">
-                    <i class="fa-solid fa-seedling"></i>
+
+                <div class="hero-text">
+                    <h1>Join the Smart Food<br>Redistribution Network</h1>
+                    <p class="subtitle">Donate food. Save lives. Reduce waste using AI technology.</p>
                 </div>
-                <h2>Create an Account</h2>
-                <p>Join the movement to end food waste.</p>
+
+                <!-- Graphic / Illustration Alternative -->
+                <div class="hero-graphic">
+                    <div class="floating-card glass-panel card-1">
+                        <div class="card-icon bg-gradient-brand"><i class="fa-solid fa-robot"></i></div>
+                        <div class="card-info">
+                            <h5>AI Powered Matching</h5>
+                            <p>Connecting surplus instantly.</p>
+                        </div>
+                    </div>
+                    <div class="floating-card glass-panel card-2">
+                        <div class="card-icon bg-gradient-orange"><i class="fa-solid fa-earth-americas"></i></div>
+                        <div class="card-info">
+                            <h5>Zero Waste Goal</h5>
+                            <p>Global impact tracked live.</p>
+                        </div>
+                    </div>
+                    <div class="floating-card glass-panel card-3">
+                        <div class="card-icon bg-gradient-green"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                        <div class="card-info">
+                            <h5>Trusted by 500+ NGOs</h5>
+                            <p>Join the movement today.</p>
+                        </div>
+                    </div>
+                    <!-- Background aesthetic ring -->
+                    <div class="hero-ring"></div>
+                </div>
             </div>
+        </div>
 
-            <form id="registerForm" class="register-form">
+        <!-- Right Side: Registration Form -->
+        <div class="form-section">
+            <div class="form-container glass-panel">
 
-                <!-- Step 1: User Type Selection -->
-                <div class="form-section">
-                    <h3 class="section-title">I am registering as a...</h3>
-                    <div class="user-type-grid">
-                        <label class="user-type-card">
-                            <input type="radio" name="userType" value="restaurant" required>
-                            <div class="card-content">
-                                <i class="fa-solid fa-utensils"></i>
-                                <span>Restaurant</span>
+                <div class="form-header">
+                    <h2>Create your account</h2>
+                    <p>Select your role to get started</p>
+                </div>
+
+                <form id="registrationForm" onsubmit="event.preventDefault();">
+
+                    <!-- Role Selection Cards -->
+                    <div class="role-selection">
+                        <label class="role-card">
+                            <input type="radio" name="userRole" value="restaurant" checked>
+                            <div class="role-card-content">
+                                <div class="role-icon"><i class="fa-solid fa-store"></i></div>
+                                <span>Restaurant / Business</span>
                             </div>
                         </label>
-                        <label class="user-type-card">
-                            <input type="radio" name="userType" value="household">
-                            <div class="card-content">
-                                <i class="fa-solid fa-house"></i>
-                                <span>Household</span>
+
+                        <label class="role-card">
+                            <input type="radio" name="userRole" value="household">
+                            <div class="role-card-content">
+                                <div class="role-icon"><i class="fa-solid fa-house"></i></div>
+                                <span>Household / Hostel</span>
                             </div>
                         </label>
-                        <label class="user-type-card">
-                            <input type="radio" name="userType" value="ngo">
-                            <div class="card-content">
-                                <i class="fa-solid fa-hands-holding-child"></i>
-                                <span>NGO</span>
+
+                        <label class="role-card">
+                            <input type="radio" name="userRole" value="ngo">
+                            <div class="role-card-content">
+                                <div class="role-icon"><i class="fa-solid fa-handshake-angle"></i></div>
+                                <span>NGO / Charity</span>
                             </div>
                         </label>
-                        <label class="user-type-card">
-                            <input type="radio" name="userType" value="volunteer">
-                            <div class="card-content">
-                                <i class="fa-solid fa-truck-fast"></i>
+
+                        <label class="role-card">
+                            <input type="radio" name="userRole" value="volunteer">
+                            <div class="role-card-content">
+                                <div class="role-icon"><i class="fa-solid fa-hands-holding-child"></i></div>
                                 <span>Volunteer</span>
                             </div>
                         </label>
-                    </div>
-                </div>
 
-                <!-- Step 2: General Information -->
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="fullName">Full Name / Org Name</label>
-                        <div class="input-wrapper">
-                            <i class="fa-regular fa-user input-icon"></i>
-                            <input type="text" id="fullName" name="fullName" placeholder="John Doe" required>
+                        <!-- Hidden Admin Input for sneaky devs -->
+                        <input type="radio" name="userRole" value="admin" id="adminRole" style="display: none;">
+                    </div>
+
+                    <!-- Dynamic Form Fields -->
+                    <div class="form-grid">
+
+                        <!-- Name -->
+                        <div class="input-group">
+                            <label for="fullName" id="nameLabel">Organization Name <span
+                                    class="required">*</span></label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-user"></i>
+                                <input type="text" id="fullName" placeholder="Enter your name" required>
+                            </div>
+                            <span class="error-text" id="nameError">Full name is required.</span>
                         </div>
-                        <span class="error-message" id="nameError">Name is required.</span>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="phone">Phone Number</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-phone input-icon"></i>
-                            <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000" required>
+                        <!-- Email -->
+                        <div class="input-group">
+                            <label for="email">Email Address <span class="required">*</span></label>
+                            <div class="input-wrapper">
+                                <i class="fa-regular fa-envelope"></i>
+                                <input type="email" id="email" placeholder="hello@example.com" required>
+                            </div>
+                            <span class="error-text" id="emailError">Please enter a valid email address.</span>
                         </div>
-                        <span class="error-message" id="phoneError">Valid phone number required.</span>
-                    </div>
 
-                    <div class="form-group full-width">
-                        <label for="email">Email Address</label>
-                        <div class="input-wrapper">
-                            <i class="fa-regular fa-envelope input-icon"></i>
-                            <input type="email" id="email" name="email" placeholder="name@example.com"
-                                autocomplete="email" required>
+                        <!-- Phone Number -->
+                        <div class="input-group">
+                            <label for="phone">Phone Number <span class="required">*</span></label>
+                            <div class="input-wrapper phone-input">
+                                <select class="country-code">
+                                    <option value="+1">+1 (US)</option>
+                                    <option value="+44">+44 (UK)</option>
+                                    <option value="+91">+91 (IN)</option>
+                                </select>
+                                <input type="tel" id="phone" placeholder="98765 43210" required>
+                            </div>
                         </div>
-                        <span class="error-message" id="emailError">Please enter a valid email address.</span>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="password">Password</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-lock input-icon"></i>
-                            <input type="password" id="password" name="password" placeholder="••••••••"
-                                autocomplete="new-password" required>
-                            <button type="button" class="toggle-password" tabindex="-1"
-                                aria-label="Toggle password visibility">
-                                <i class="fa-regular fa-eye"></i>
-                            </button>
+                        <!-- Location (Auto detect + manual) -->
+                        <div class="input-group full-width">
+                            <label for="location">Location <span class="required">*</span></label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-location-dot"></i>
+                                <input type="text" id="location" placeholder="Enter city, address or zip code" required>
+                                <button type="button" class="btn-detect-gps" id="detectGpsBtn"
+                                    title="Auto-detect Location">
+                                    <i class="fa-solid fa-location-crosshairs"></i>
+                                </button>
+                            </div>
                         </div>
-                        <span class="error-message" id="passwordError">Min 8 chars required.</span>
-                    </div>
 
-                    <div class="form-group">
-                        <label for="confirmPassword">Confirm Password</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-lock input-icon"></i>
-                            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="••••••••"
-                                autocomplete="new-password" required>
+                        <!-- Dynamic Field: FSSAI / License (Starts visible for Restaurant) -->
+                        <div class="input-group full-width dynamic-field" id="licenseFieldGroup">
+                            <label for="licenseId">Food Safety License / FSSAI Number</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-certificate"></i>
+                                <input type="text" id="licenseId" placeholder="e.g. 10012011111111">
+                            </div>
                         </div>
-                        <span class="error-message" id="confirmPasswordError">Passwords do not match.</span>
-                    </div>
 
-                    <div class="form-group full-width">
-                        <label for="location">Location / Address</label>
-                        <div class="input-wrapper">
-                            <i class="fa-solid fa-location-dot input-icon"></i>
-                            <input type="text" id="location" name="location" placeholder="123 Rescue St, City, State"
-                                required>
-                            <button type="button" class="get-location-btn" id="getLocBtn" title="Get current location">
-                                <i class="fa-solid fa-crosshairs"></i>
-                            </button>
+                        <!-- Dynamic Field: NGO Registration ID (Starts hidden) -->
+                        <div class="input-group full-width dynamic-field" id="ngoIdFieldGroup" style="display: none;">
+                            <label for="ngoId">Registration / Tax ID</label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-building-ngo"></i>
+                                <input type="text" id="ngoId" placeholder="Organization ID Number">
+                            </div>
                         </div>
+
+                        <!-- Document Upload (Optional) -->
+                        <div class="input-group full-width">
+                            <label for="documentUpload">Upload ID Proof or License (Optional)</label>
+                            <div class="file-upload-wrapper">
+                                <input type="file" id="documentUpload" class="file-input" accept=".pdf,.jpg,.png">
+                                <div class="upload-ui">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i>
+                                    <span>Drag & drop or <span class="browse-link"
+                                            onclick="document.getElementById('documentUpload').click()">browse
+                                            file</span></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Password -->
+                        <div class="input-group">
+                            <label for="password">Password <span class="required">*</span></label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock"></i>
+                                <input type="password" id="password" placeholder="Create robust password" required>
+                                <button type="button" class="password-toggle"><i class="fa-regular fa-eye"></i></button>
+                            </div>
+                            <div class="password-strength">
+                                <div class="strength-bar" id="strengthBar"></div>
+                            </div>
+                            <span class="strength-text" id="strengthText">Password strength</span>
+                        </div>
+
+                        <!-- Confirm Password -->
+                        <div class="input-group">
+                            <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
+                            <div class="input-wrapper">
+                                <i class="fa-solid fa-lock"></i>
+                                <input type="password" id="confirmPassword" placeholder="Confirm password" required>
+                            </div>
+                            <span class="error-text" id="passwordError">Passwords do not match.</span>
+                        </div>
+
+                        <!-- Terms & Conditions -->
+                        <div class="input-group full-width terms-group">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="termsCheck" required>
+                                <span class="checkmark"></span>
+                                <span class="terms-text">I agree to the <a href="#">Terms & Conditions</a> and <a
+                                        href="#">Food Safety Policy</a>.</span>
+                            </label>
+                        </div>
+                    </div> <!-- /form-grid -->
+
+                    <button type="submit" class="btn btn-primary btn-large shadow-glow" id="submitBtn">
+                        Create Account <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+
+                    <div class="divider">
+                        <span>OR</span>
                     </div>
-                </div>
 
-                <!-- Step 3: Dynamic Fields (ID Proof) -->
-                <div class="form-group full-width dynamic-field hidden" id="idProofSection">
-                    <label for="idProof">Upload ID Proof (Required for NGOs and Volunteers)</label>
-                    <div class="file-upload-wrapper">
-                        <input type="file" id="idProof" name="idProof" accept=".pdf,.jpg,.jpeg,.png" class="file-input">
-                        <label for="idProof" class="file-label">
-                            <i class="fa-solid fa-cloud-arrow-up"></i>
-                            <span id="fileName">Choose a file or drag it here</span>
-                        </label>
-                    </div>
-                    <p class="field-hint">Accepted formats: PDF, JPG, PNG (Max 5MB)</p>
-                    <span class="error-message" id="idProofError">Document is required for this role.</span>
-                </div>
+                    <button type="button" class="btn btn-outline btn-social">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg"
+                            alt="Google Logo" width="20">
+                        Continue with Google
+                    </button>
 
-                <div class="terms-group">
-                    <label class="checkbox-container">
-                        <input type="checkbox" id="terms" required>
-                        <span class="checkmark"></span>
-                        I agree to the <a href="#">Terms of Service</a> & <a href="#">Privacy Policy</a>
-                    </label>
-                </div>
+                    <p class="login-link">Already have an account? <a href="../login/index.html">Log in</a></p>
 
-                <button type="submit" class="submit-btn" id="submitBtn">
-                    <span class="btn-text">Create Account</span>
-                    <i class="fa-solid fa-arrow-right btn-icon"></i>
-                    <i class="fa-solid fa-circle-notch fa-spin loader-icon hidden"></i>
-                </button>
-            </form>
-
-            <div class="card-footer">
-                <p>Already have an account? <a href="../login/index.html" class="login-link">Sign In here</a></p>
+                </form>
             </div>
-
-            <div id="toast" class="toast hidden">
-                <div class="toast-content">
-                    <i class="fa-solid fa-check-circle"></i>
-                    <div class="message">
-                        <span class="text text-1">Success</span>
-                        <span class="text text-2">Account registered successfully!</span>
-                    </div>
-                </div>
-                <div class="progress"></div>
-            </div>
-
         </div>
     </div>
 
+    <!-- Success Modal Overlay -->
+    <div class="modal-overlay" id="successModal">
+        <div class="modal-content glass-panel animated-entry">
+            <div class="modal-icon bg-gradient-brand"><i class="fa-solid fa-check"></i></div>
+            <h2>Registration Successful!</h2>
+            <p>Welcome to the AI Food Rescue Platform. Your account has been created. Redirecting you to your
+                dashboard...</p>
+            <div class="loading-bar">
+                <div class="loading-fill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="script.js"></script>
 </body>
 

@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation & Distribution History - AI Food Rescue</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Top-level Background Decorative Blobs for Premium Feel -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar glass-panel" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo">
+                    <div class="logo-icon"><i class="fa-solid fa-leaf"></i></div>
+                    <span class="logo-text">Food<span>Rescue</span></span>
+                </a>
+                <button class="close-sidebar-btn" id="closeSidebarBtn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="../donor-dashboard/index.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                    <li><a href="#"><i class="fa-solid fa-cloud-arrow-up"></i> Upload Food</a></li>
+                    <li class="active"><a href="#"><i class="fa-solid fa-clock-rotate-left"></i> History</a></li>
+                    <li><a href="#"><i class="fa-solid fa-user"></i> Profile</a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="../login/index.html" class="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    Logout</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+
+            <!-- Top Navbar -->
+            <header class="topbar glass-panel">
+                <div class="topbar-left">
+                    <button class="menu-trigger" id="menuTriggerBtn">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div>
+                        <h1 class="page-title">Distribution History</h1>
+                        <p class="page-subtitle">Track your impact and past redistributions.</p>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="search-bar">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="searchInput" placeholder="Search food, location, NGO...">
+                    </div>
+                    <button class="btn btn-primary shadow-glow" id="downloadReportBtn" title="For Admins">
+                        <i class="fa-solid fa-file-arrow-down"></i> <span>Export Report</span>
+                    </button>
+                    <!-- Notification Bell with Notification Badge -->
+                    <div class="notification-wrapper">
+                        <button class="icon-btn unread-alert"><i class="fa-regular fa-bell"></i></button>
+                    </div>
+                    <div class="profile-avatar">OM</div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-body">
+
+                <!-- Statistics Summary -->
+                <div class="stats-grid">
+                    <div class="stat-card glass-panel animated-entry" style="animation-delay: 0.1s;">
+                        <div class="stat-icon-wrapper bg-gradient-green">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Total Food Donated</p>
+                            <h3 class="stat-value">1,245 <span class="unit">lbs</span></h3>
+                        </div>
+                    </div>
+
+                    <div class="stat-card glass-panel animated-entry" style="animation-delay: 0.2s;">
+                        <div class="stat-icon-wrapper bg-gradient-orange">
+                            <i class="fa-solid fa-plate-wheat"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Total Meals Served</p>
+                            <h3 class="stat-value">830</h3>
+                        </div>
+                    </div>
+
+                    <div class="stat-card glass-panel animated-entry" style="animation-delay: 0.3s;">
+                        <div class="stat-icon-wrapper bg-gradient-brand">
+                            <i class="fa-solid fa-leaf"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Food Saved from Waste</p>
+                            <h3 class="stat-value">560 <span class="unit">kg</span></h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters Section -->
+                <div class="filters-container glass-panel animated-entry" style="animation-delay: 0.4s;">
+                    <div class="filter-group">
+                        <label for="dateFilter"><i class="fa-regular fa-calendar"></i> Date Range</label>
+                        <select id="dateFilter" class="custom-select">
+                            <option value="all">All Time</option>
+                            <option value="7days">Last 7 Days</option>
+                            <option value="30days">Last 30 Days</option>
+                            <option value="thisYear">This Year</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="partnerFilter"><i class="fa-solid fa-handshake"></i> Partner (NGO/Donor)</label>
+                        <select id="partnerFilter" class="custom-select">
+                            <option value="all">All Partners</option>
+                            <option value="Hope NGO">Hope NGO</option>
+                            <option value="City Shelter">City Shelter</option>
+                            <option value="Community Kitchen">Community Kitchen</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="statusFilter"><i class="fa-solid fa-signal"></i> Delivery Status</label>
+                        <select id="statusFilter" class="custom-select">
+                            <option value="all">All Statuses</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Picked">Picked Up</option>
+                            <option value="Pending">Pending Match</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- History Records List (Cards Format for modern UI) -->
+                <div class="history-feed" id="historyFeed">
+
+                    <!-- Record 1: Delivered -->
+                    <div class="history-card glass-panel animated-entry" style="animation-delay: 0.5s;"
+                        data-status="Delivered" data-partner="Hope NGO">
+                        <div class="card-header">
+                            <div class="donor-details">
+                                <div class="avatar bg-gradient-brand">OM</div>
+                                <div>
+                                    <span class="user-role">Donor</span>
+                                    <h4>Oasis Meals</h4>
+                                    <p class="location"><i class="fa-solid fa-location-dot"></i> 123 Main St, Downtown
+                                        Sector</p>
+                                </div>
+                            </div>
+                            <div class="status-badge badge-delivered">
+                                <i class="fa-solid fa-check-circle"></i> Delivered
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="food-details">
+                                <div class="food-icon"><i class="fa-solid fa-burger"></i></div>
+                                <div class="food-text">
+                                    <h5>Assorted Sandwiches</h5>
+                                    <p>Prepared Food • ~20 servings</p>
+                                </div>
+                            </div>
+
+                            <!-- Modern Timeline showing the journey -->
+                            <div class="journey-timeline">
+                                <div class="timeline-step completed">
+                                    <div class="step-dot"></div>
+                                    <div class="step-info">
+                                        <p class="step-title">Uploaded</p>
+                                        <p class="step-time">Oct 24, 08:30 AM</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-line completed"></div>
+                                <div class="timeline-step completed">
+                                    <div class="step-dot"></div>
+                                    <div class="step-info">
+                                        <p class="step-title">Picked Up</p>
+                                        <p class="step-time">Oct 24, 09:15 AM</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-line completed"></div>
+                                <div class="timeline-step completed">
+                                    <div class="step-dot"></div>
+                                    <div class="step-info">
+                                        <p class="step-title">Hope NGO</p>
+                                        <p class="step-time">Oct 24, 09:45 AM</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="footer-meta">
+                                <span><i class="fa-solid fa-clock"></i> <strong>Expiry:</strong> Today, 10:00 PM</span>
+                                <span class="separator">•</span>
+                                <span><i class="fa-solid fa-truck"></i> <strong>Assigned to:</strong> Volunteer
+                                    Alex</span>
+                            </div>
+                            <button class="btn btn-icon-only" title="View Details"><i
+                                    class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Record 2: Picked Up -->
+                    <div class="history-card glass-panel animated-entry" style="animation-delay: 0.6s;"
+                        data-status="Picked" data-partner="City Shelter">
+                        <div class="card-header">
+                            <div class="donor-details">
+                                <div class="avatar bg-gradient-orange">SB</div>
+                                <div>
+                                    <span class="user-role">Donor</span>
+                                    <h4>Sunrise Bakery</h4>
+                                    <p class="location"><i class="fa-solid fa-location-dot"></i> 78 Oak Ln, Westside</p>
+                                </div>
+                            </div>
+                            <div class="status-badge badge-picked">
+                                <i class="fa-solid fa-truck-fast"></i> Picked Up
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="food-details">
+                                <div class="food-icon"><i class="fa-solid fa-bread-slice"></i></div>
+                                <div class="food-text">
+                                    <h5>Leftover Pastries</h5>
+                                    <p>Baked Goods • ~30 items</p>
+                                </div>
+                            </div>
+
+                            <!-- Modern Timeline showing the journey -->
+                            <div class="journey-timeline">
+                                <div class="timeline-step completed">
+                                    <div class="step-dot"></div>
+                                    <div class="step-info">
+                                        <p class="step-title">Uploaded</p>
+                                        <p class="step-time">Oct 25, 06:00 PM</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-line completed"></div>
+                                <div class="timeline-step completed pulse-active">
+                                    <div class="step-dot"></div>
+                                    <div class="step-info">
+                                        <p class="step-title">Picked Up</p>
+                                        <p class="step-time">Oct 25, 06:45 PM</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-line pending"></div>
+                                <div class="timeline-step pending">
+                                    <div class="step-dot"></div>
+                                    <div class="step-info">
+                                        <p class="step-title">City Shelter</p>
+                                        <p class="step-time">Est. 07:10 PM</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="footer-meta">
+                                <span><i class="fa-solid fa-clock"></i> <strong>Expiry:</strong> Tomorrow, 08:00
+                                    AM</span>
+                                <span class="separator">•</span>
+                                <span><i class="fa-solid fa-truck"></i> <strong>Assigned to:</strong> Volunteer
+                                    Sarah</span>
+                            </div>
+                            <button class="btn btn-icon-only" title="View Details"><i
+                                    class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Record 3: Pending -->
+                    <div class="history-card glass-panel animated-entry" style="animation-delay: 0.7s;"
+                        data-status="Pending" data-partner="Pending Match">
+                        <div class="card-header">
+                            <div class="donor-details">
+                                <div class="avatar bg-gradient-green">GG</div>
+                                <div>
+                                    <span class="user-role">Donor</span>
+                                    <h4>Green Grocers</h4>
+                                    <p class="location"><i class="fa-solid fa-location-dot"></i> 45 Market Ave</p>
+                                </div>
+                            </div>
+                            <div class="status-badge badge-pending">
+                                <i class="fa-solid fa-spinner fa-spin"></i> Pending Match
+                            </div>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="food-details">
+                                <div class="food-icon"><i class="fa-solid fa-carrot"></i></div>
+                                <div class="food-text">
+                                    <h5>Fresh Vegetables Box</h5>
+                                    <p>Raw Ingredients • 15 lbs</p>
+                                </div>
+                            </div>
+
+                            <!-- Modern Timeline showing the journey -->
+                            <div class="journey-timeline">
+                                <div class="timeline-step completed">
+                                    <div class="step-dot"></div>
+                                    <div class="step-info">
+                                        <p class="step-title">Uploaded</p>
+                                        <p class="step-time">Oct 25, 10:15 AM</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-line pending"></div>
+                                <div class="timeline-step pending">
+                                    <div class="step-dot"></div>
+                                    <div class="step-info">
+                                        <p class="step-title">Awaiting Pickup</p>
+                                        <p class="step-time">TBD</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-line pending"></div>
+                                <div class="timeline-step pending">
+                                    <div class="step-dot"></div>
+                                    <div class="step-info">
+                                        <p class="step-title">Pending Match</p>
+                                        <p class="step-time">TBD</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card-footer">
+                            <div class="footer-meta">
+                                <span><i class="fa-solid fa-clock"></i> <strong>Expiry:</strong> Tomorrow, 09:00
+                                    AM</span>
+                                <span class="separator">•</span>
+                                <span class="text-warning"><i class="fa-solid fa-brain"></i> <strong>AI Matching in
+                                        progress...</strong></span>
+                            </div>
+                            <button class="btn btn-icon-only" title="View Details"><i
+                                    class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Empty State for Filters -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
+                    <h3>No records found</h3>
+                    <p>Try adjusting your search or filters to find what you're looking for.</p>
+                    <button class="btn btn-outline mt-3" id="clearFiltersBtn">Clear Filters</button>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+
+</html>

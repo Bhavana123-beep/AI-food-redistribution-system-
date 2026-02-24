@@ -123,6 +123,47 @@
                 </div>
             </div>
 
+            <!-- Secondary Widgets (Chart, Map, AI) -->
+            <div class="secondary-widgets-container">
+                <!-- AI Suggestion Card -->
+                <div class="widget-card glass-effect ai-suggestion">
+                    <div class="widget-header">
+                        <h3><i class="fa-solid fa-wand-magic-sparkles" style="color: var(--accent-purple);"></i> AI
+                            Insight</h3>
+                    </div>
+                    <div class="widget-body">
+                        <h4>Best time to donate:</h4>
+                        <p class="highlight-time"><i class="fa-solid fa-clock"></i> 8:00 PM - 9:30 PM</p>
+                        <p class="insight-text">High demand from local shelters expected tonight.</p>
+                        <button class="btn btn-outline" style="width: 100%; margin-top: 10px;">Schedule
+                            Auto-Pickup</button>
+                    </div>
+                </div>
+
+                <!-- Chart container -->
+                <div class="widget-card glass-effect chart-widget">
+                    <div class="widget-header">
+                        <h3>Donation Status (30 Days)</h3>
+                    </div>
+                    <div class="widget-body">
+                        <canvas id="donationChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Map container -->
+                <div class="widget-card glass-effect map-widget">
+                    <div class="widget-header">
+                        <h3>Nearby Partner NGOs</h3>
+                    </div>
+                    <div class="widget-body map-box">
+                        <iframe
+                            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d115291.56455581373!2d-74.06297314545585!3d40.71452243452656!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sin!4v1709149021234!5m2!1sen!2sin"
+                            width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"
+                            referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    </div>
+                </div>
+            </div>
+
             <!-- Active Donations Table / List -->
             <div class="data-section active-donations glass-effect">
                 <div class="section-header">
@@ -285,6 +326,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>
 
