@@ -152,4 +152,43 @@ document.addEventListener('DOMContentLoaded', () => {
             activeListingsEl.textContent = current + 1;
         }
     }
+
+    // Initialize Dashboard Chart
+    const chartCanvas = document.getElementById('donationChart');
+    if (chartCanvas) {
+        new Chart(chartCanvas, {
+            type: 'doughnut',
+            data: {
+                labels: ['Matched', 'Pending', 'In Transit', 'Completed'],
+                datasets: [{
+                    data: [45, 15, 10, 30],
+                    backgroundColor: [
+                        '#2ecc71', // Matched (primary)
+                        '#f1c40f', // Pending
+                        '#3498db', // Transit
+                        '#9b59b6'  // Completed
+                    ],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            font: {
+                                family: "'Outfit', sans-serif"
+                            },
+                            usePointStyle: true,
+                            padding: 20
+                        }
+                    }
+                },
+                cutout: '75%'
+            }
+        });
+    }
 });

@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AI Food Rescue</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="dark-theme">
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="../index.html" class="logo">
+                <i class="fa-solid fa-leaf"></i> Food<span>Rescue</span>
+            </a>
+            <button class="close-sidebar-btn" id="closeSidebarBtn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="user-profile-sm">
+            <div class="avatar admin-avatar"><i class="fa-solid fa-shield-halved"></i></div>
+            <div class="user-info">
+                <h4>Admin System</h4>
+                <p>Super User</p>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="active"><a href="#"><i class="fa-solid fa-chart-line"></i> Analytics Overview</a></li>
+                <li><a href="#"><i class="fa-solid fa-users-gear"></i> User Management</a></li>
+                <li><a href="#"><i class="fa-solid fa-earth-americas"></i> Live Map</a></li>
+                <li><a href="#"><i class="fa-solid fa-file-invoice-dollar"></i> Financials & Reports</a></li>
+                <li><a href="#"><i class="fa-solid fa-triangle-exclamation"></i> System Alerts <span
+                            class="badge">1</span></a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#"><i class="fa-solid fa-gear"></i> System Settings</a>
+            <a href="../login/index.html" class="logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-trigger" id="menuTriggerBtn">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="greeting">
+                    <h2>Platform Overview 🚀</h2>
+                    <p>Monitor system health and redistribution impact.</p>
+                </div>
+            </div>
+
+            <div class="header-right">
+                <div class="status-indicator">
+                    <span class="status-dot online"></span> System Status: <strong>Optimal</strong>
+                </div>
+                <div class="profile-dropdown">
+                    <div class="avatar-sm admin-avatar"><i class="fa-solid fa-shield-halved"></i></div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Dashboard Widgets -->
+        <div class="dashboard-grid">
+
+            <!-- Metrics Cards -->
+            <div class="metrics-container">
+                <div class="metric-card glass-effect dark-card">
+                    <div class="metric-icon icon-green">
+                        <i class="fa-solid fa-boxes-stacked"></i>
+                    </div>
+                    <div class="metric-data">
+                        <h3>14,205 lbs</h3>
+                        <p>Total Food Donated Today</p>
+                    </div>
+                    <div class="metric-trend positive">
+                        <i class="fa-solid fa-arrow-trend-up"></i> +12%
+                    </div>
+                </div>
+
+                <div class="metric-card glass-effect dark-card">
+                    <div class="metric-icon icon-blue">
+                        <i class="fa-solid fa-users"></i>
+                    </div>
+                    <div class="metric-data">
+                        <h3>84</h3>
+                        <p>Total Active NGOs</p>
+                    </div>
+                    <div class="metric-trend positive">
+                        <i class="fa-solid fa-arrow-trend-up"></i> +3
+                    </div>
+                </div>
+
+                <div class="metric-card glass-effect dark-card">
+                    <div class="metric-icon icon-orange">
+                        <i class="fa-solid fa-utensils"></i>
+                    </div>
+                    <div class="metric-data">
+                        <h3>11,830</h3>
+                        <p>Total Meals Saved</p>
+                    </div>
+                    <div class="metric-trend positive">
+                        <i class="fa-solid fa-arrow-trend-up"></i> +8.5%
+                    </div>
+                </div>
+
+                <div class="metric-card glass-effect dark-card">
+                    <div class="metric-icon icon-purple">
+                        <i class="fa-solid fa-recycle"></i>
+                    </div>
+                    <div class="metric-data">
+                        <h3>4.5 T</h3>
+                        <p>Waste Reduced (CO2)</p>
+                    </div>
+                    <div class="metric-trend neutral">
+                        <i class="fa-solid fa-minus"></i> 0%
+                    </div>
+                </div>
+            </div>
+
+            <!-- Analytics and Map Row -->
+            <div class="analytics-row">
+                <!-- Waste Reduction Chart -->
+                <div class="widget-card glass-effect dark-card chart-container">
+                    <div class="widget-header">
+                        <h3>Impact & Waste Reduction Analytics (7 Days)</h3>
+                        <button class="btn-icon"><i class="fa-solid fa-download"></i></button>
+                    </div>
+                    <div class="widget-body">
+                        <canvas id="impactChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Live Map -->
+                <div class="widget-card glass-effect dark-card map-container">
+                    <div class="widget-header">
+                        <h3>Live Donation Activity <span class="live-pulse"></span></h3>
+                    </div>
+                    <div class="widget-body map-box interactive-map-placeholder">
+                        <div class="map-overlay">
+                            <!-- Dark mode map placeholder -->
+                            <img src="https://images.unsplash.com/photo-1518005020951-eccb494ad742?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80"
+                                alt="Map View"
+                                style="width:100%; height:100%; object-fit:cover; filter: brightness(0.4) saturate(0.5) contrast(1.2); border-radius: 8px;">
+                            <div class="map-pins">
+                                <!-- Simulated Live Activity Pins -->
+                                <div class="live-pin new-donor" style="top: 35%; left: 45%;"><i
+                                        class="fa-solid fa-gift"></i></div>
+                                <div class="live-pin transit" style="top: 20%; left: 60%;"><i
+                                        class="fa-solid fa-truck"></i></div>
+                                <div class="live-pin transit" style="top: 55%; left: 30%;"><i
+                                        class="fa-solid fa-truck"></i></div>
+                                <div class="live-pin ngo-receive" style="top: 70%; left: 55%;"><i
+                                        class="fa-solid fa-house-medical"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="analytics-row-secondary">
+                <!-- Donation Breakdown Doughnut -->
+                <div class="widget-card glass-effect dark-card chart-container-sm">
+                    <div class="widget-header">
+                        <h3>Donation Sources</h3>
+                    </div>
+                    <div class="widget-body">
+                        <canvas id="sourceChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- User Management Table -->
+                <div class="widget-card glass-effect dark-card user-table-container">
+                    <div class="widget-header">
+                        <h3>Recent User Activity</h3>
+                        <div class="filter-tabs">
+                            <button class="tab-btn active">All</button>
+                            <button class="tab-btn">Donors</button>
+                            <button class="tab-btn">NGOs</button>
+                            <button class="tab-btn">Volunteers</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>User / Entity Name</th>
+                                    <th>Role</th>
+                                    <th>Status</th>
+                                    <th>Last Active</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="item-info">
+                                            <div class="item-icon"><i class="fa-solid fa-store"></i></div>
+                                            <div>
+                                                <h4>Oasis Meals</h4>
+                                                <p>oasis@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Donor</td>
+                                    <td><span class="status badge-active">Active</span></td>
+                                    <td>2 mins ago</td>
+                                    <td>
+                                        <button class="btn-icon" title="Manage"><i
+                                                class="fa-solid fa-ellipsis-vertical"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="item-info">
+                                            <div class="item-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                                            <div>
+                                                <h4>Hope NGO</h4>
+                                                <p>contact@hopengo.org</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>NGO Partner</td>
+                                    <td><span class="status badge-active">Active</span></td>
+                                    <td>15 mins ago</td>
+                                    <td>
+                                        <button class="btn-icon" title="Manage"><i
+                                                class="fa-solid fa-ellipsis-vertical"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="item-info">
+                                            <div class="item-icon"><i class="fa-solid fa-user"></i></div>
+                                            <div>
+                                                <h4>Alex Johnson</h4>
+                                                <p>alex.j@example.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Volunteer</td>
+                                    <td><span class="status badge-inactive">Offline</span></td>
+                                    <td>2 hrs ago</td>
+                                    <td>
+                                        <button class="btn-icon" title="Manage"><i
+                                                class="fa-solid fa-ellipsis-vertical"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="item-info">
+                                            <div class="item-icon"><i class="fa-solid fa-building-wheat"></i></div>
+                                            <div>
+                                                <h4>Sunrise Bakery</h4>
+                                                <p>hello@sunrise.com</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Donor</td>
+                                    <td><span class="status badge-warning">Review Pnd</span></td>
+                                    <td>1 day ago</td>
+                                    <td>
+                                        <button class="btn-icon" title="Manage"><i
+                                                class="fa-solid fa-ellipsis-vertical"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+
+</html>

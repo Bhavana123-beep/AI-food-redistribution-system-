@@ -1,259 +1,201 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const form = document.getElementById('registerForm');
-    const userTypeRadios = document.getElementsByName('userType');
-    const idProofSection = document.getElementById('idProofSection');
-    const idProofInput = document.getElementById('idProof');
-    const fileWrapper = document.querySelector('.file-upload-wrapper');
-    const fileNameDisplay = document.getElementById('fileName');
+    // 1. Dynamic Form Fields based on Role Selection
+    const roleRadios = document.querySelectorAll('input[name="userRole"]');
+    const licenseFieldGroup = document.getElementById('licenseFieldGroup');
+    const ngoIdFieldGroup = document.getElementById('ngoIdFieldGroup');
+    const nameLabel = document.getElementById('nameLabel');
+    const fullNameInput = document.getElementById('fullName');
 
-    const togglePasswordBtn = document.querySelector('.toggle-password');
+    function updateDynamicFields(role) {
+        // Reset dynamic fields
+        licenseFieldGroup.style.display = 'none';
+        ngoIdFieldGroup.style.display = 'none';
+
+        // Animate field in
+        const showField = (field) => {
+            field.style.display = 'flex';
+            field.style.animation = 'none';
+            field.offsetHeight; // trigger reflow
+            field.style.animation = 'slideDown 0.3s ease';
+        };
+
+        if (role === 'restaurant') {
+            nameLabel.innerHTML = 'Restaurant / Business Name <span class="required">*</span>';
+            fullNameInput.placeholder = "e.g. Oasis Meals";
+            showField(licenseFieldGroup);
+
+        } else if (role === 'ngo') {
+            nameLabel.innerHTML = 'NGO / Charity Name <span class="required">*</span>';
+            fullNameInput.placeholder = "e.g. Hope Shelter";
+            showField(ngoIdFieldGroup);
+
+        } else if (role === 'household') {
+            nameLabel.innerHTML = 'House / Society Name <span class="required">*</span>';
+            fullNameInput.placeholder = "e.g. Green Valley Apts";
+
+        } else if (role === 'volunteer') {
+            nameLabel.innerHTML = 'Full Name <span class="required">*</span>';
+            fullNameInput.placeholder = "e.g. Alex Johnson";
+        } else {
+            nameLabel.innerHTML = 'Organization Name <span class="required">*</span>';
+        }
+    }
+
+    roleRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            updateDynamicFields(e.target.value);
+        });
+    });
+
+    // 2. Auto-Detect GPS Location (Simulated)
+    const detectGpsBtn = document.getElementById('detectGpsBtn');
+    const locationInput = document.getElementById('location');
+
+    if (detectGpsBtn) {
+        detectGpsBtn.addEventListener('click', () => {
+            // Visual feedback
+            const icon = detectGpsBtn.querySelector('i');
+            icon.classList.remove('fa-location-crosshairs');
+            icon.classList.add('fa-spinner', 'fa-spin');
+
+            setTimeout(() => {
+                locationInput.value = "123 Main St, Downtown Sector (Auto-detected)";
+                // Reset icon
+                icon.classList.remove('fa-spinner', 'fa-spin');
+                icon.classList.add('fa-location-crosshairs');
+
+                // Success visual
+                locationInput.parentElement.classList.add('success');
+                setTimeout(() => locationInput.parentElement.classList.remove('success'), 2000);
+            }, 1000);
+        });
+    }
+
+    // 3. Password Visibility Toggle
     const passwordInput = document.getElementById('password');
     const confirmPasswordInput = document.getElementById('confirmPassword');
+    const passwordToggles = document.querySelectorAll('.password-toggle');
 
-    const toast = document.getElementById('toast');
-    const submitBtn = document.getElementById('submitBtn');
+    passwordToggles.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            // Prevent form submit if it was a button
+            e.preventDefault();
+            const input = e.currentTarget.previousElementSibling;
+            const icon = e.currentTarget.querySelector('i');
 
-    // --- Dynamic Fields Logic ---
-    userTypeRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            const selectedType = e.target.value;
-            // Show ID proof upload for NGO and Volunteer
-            if (selectedType === 'ngo' || selectedType === 'volunteer') {
-                idProofSection.classList.remove('hidden');
-                // Ensure it takes height immediately for transition
-                idProofSection.style.height = idProofSection.scrollHeight + "px";
-                setTimeout(() => { idProofSection.style.height = "auto"; }, 400); // clear inline height after transition
-
-                // Add required attribute dynamically if needed
-                idProofInput.setAttribute('required', 'required');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
             } else {
-                idProofSection.style.height = idProofSection.scrollHeight + "px"; // set height before hiding for transition
-                // slight delay to let browser calculate before shrinking
-                setTimeout(() => {
-                    idProofSection.style.height = "0px";
-                    idProofSection.classList.add('hidden');
-                }, 10);
-                idProofInput.removeAttribute('required');
-
-                // Clear validation if hidden
-                clearValidation(idProofSection);
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             }
         });
     });
 
-    // --- File Upload UI Logic ---
-    idProofInput.addEventListener('change', function () {
-        if (this.files && this.files.length > 0) {
-            fileNameDisplay.textContent = this.files[0].name;
-            fileWrapper.classList.add('has-file');
+    // 4. Password Strength Indicator
+    const strengthBar = document.getElementById('strengthBar');
+    const strengthText = document.getElementById('strengthText');
 
-            // basic validation check for file
-            setSuccessFor(idProofSection);
-        } else {
-            fileNameDisplay.textContent = 'Choose a file or drag it here';
-            fileWrapper.classList.remove('has-file');
-        }
-    });
+    if (passwordInput && strengthBar && strengthText) {
+        passwordInput.addEventListener('input', () => {
+            const val = passwordInput.value;
+            let strength = 0;
 
-    // Handle Drag and Drop for file input UI
-    fileWrapper.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        fileWrapper.style.borderColor = 'var(--primary)';
-        fileWrapper.style.background = 'rgba(46, 125, 50, 0.05)';
-    });
+            if (val.length >= 8) strength += 25;
+            if (val.match(/[A-Z]/)) strength += 25;
+            if (val.match(/[0-9]/)) strength += 25;
+            if (val.match(/[^A-Za-z0-9]/)) strength += 25;
 
-    fileWrapper.addEventListener('dragleave', (e) => {
-        e.preventDefault();
-        fileWrapper.style.borderColor = '';
-        if (!fileWrapper.classList.contains('has-file')) {
-            fileWrapper.style.background = '';
-        }
-    });
+            strengthBar.style.width = strength + '%';
 
-    fileWrapper.addEventListener('drop', (e) => {
-        e.preventDefault();
-        fileWrapper.style.borderColor = '';
-
-        if (e.dataTransfer.files.length) {
-            idProofInput.files = e.dataTransfer.files;
-            // trigger change event manually
-            const event = new Event('change');
-            idProofInput.dispatchEvent(event);
-        }
-    });
-
-    // --- Password Visibility Toggle ---
-    togglePasswordBtn.addEventListener('click', () => {
-        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-        passwordInput.setAttribute('type', type);
-
-        const icon = togglePasswordBtn.querySelector('i');
-        if (type === 'text') {
-            icon.classList.replace('fa-eye', 'fa-eye-slash');
-        } else {
-            icon.classList.replace('fa-eye-slash', 'fa-eye');
-        }
-    });
-
-    // --- GPS Location Simulation ---
-    const getLocBtn = document.getElementById('getLocBtn');
-    const locationInput = document.getElementById('location');
-
-    getLocBtn.addEventListener('click', () => {
-        const icon = getLocBtn.querySelector('i');
-        icon.classList.replace('fa-crosshairs', 'fa-spinner');
-        icon.classList.add('fa-spin');
-
-        // Simulate GPS fetch
-        setTimeout(() => {
-            locationInput.value = "123 Tech Avenue, Silicon City, CA";
-            icon.classList.remove('fa-spin');
-            icon.classList.replace('fa-spinner', 'fa-crosshairs');
-
-            // clear wrapper error if valid
-            setSuccessFor(locationInput.closest('.form-group'));
-        }, 1200);
-    });
-
-    // --- Form Validation & Submission ---
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-
-        if (validateForm()) {
-            simulateSubmission();
-        } else {
-            // Shake effect on error
-            const card = document.querySelector('.register-card');
-            card.style.animation = 'none';
-            card.offsetHeight; // trigger reflow
-            card.style.animation = 'shake 0.5s ease-in-out';
-        }
-    });
-
-    function validateForm() {
-        let isFormValid = true;
-
-        // Name
-        const nameInput = document.getElementById('fullName');
-        if (nameInput.value.trim() === '') {
-            setErrorFor(nameInput.closest('.form-group'), 'Name cannot be blank');
-            isFormValid = false;
-        } else {
-            setSuccessFor(nameInput.closest('.form-group'));
-        }
-
-        // Email
-        const emailInput = document.getElementById('email');
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (emailInput.value.trim() === '') {
-            setErrorFor(emailInput.closest('.form-group'), 'Email cannot be blank');
-            isFormValid = false;
-        } else if (!emailRegex.test(emailInput.value.trim())) {
-            setErrorFor(emailInput.closest('.form-group'), 'Enter a valid email');
-            isFormValid = false;
-        } else {
-            setSuccessFor(emailInput.closest('.form-group'));
-        }
-
-        // Passwords
-        if (passwordInput.value.length < 8) {
-            setErrorFor(passwordInput.closest('.form-group'), 'Password must be at least 8 characters');
-            isFormValid = false;
-        } else {
-            setSuccessFor(passwordInput.closest('.form-group'));
-        }
-
-        if (confirmPasswordInput.value !== passwordInput.value || confirmPasswordInput.value === '') {
-            setErrorFor(confirmPasswordInput.closest('.form-group'), 'Passwords do not match');
-            isFormValid = false;
-        } else {
-            setSuccessFor(confirmPasswordInput.closest('.form-group'));
-        }
-
-        // File upload if visible
-        if (!idProofSection.classList.contains('hidden')) {
-            if (idProofInput.files.length === 0) {
-                setErrorFor(idProofSection, 'Document is required for this role');
-                isFormValid = false;
+            if (val.length === 0) {
+                strengthBar.style.width = '0';
+                strengthText.textContent = "Password strength";
+                strengthBar.style.background = 'transparent';
+            } else if (strength <= 25) {
+                strengthBar.style.background = 'var(--error)';
+                strengthText.textContent = "Weak - Add letters & numbers";
+                strengthText.style.color = 'var(--error)';
+            } else if (strength <= 50) {
+                strengthBar.style.background = 'var(--warning)';
+                strengthText.textContent = "Fair - Add uppercase or symbols";
+                strengthText.style.color = 'var(--warning)';
+            } else if (strength <= 75) {
+                strengthBar.style.background = 'var(--brand-blue)';
+                strengthText.textContent = "Good - Almost there";
+                strengthText.style.color = 'var(--brand-blue)';
             } else {
-                setSuccessFor(idProofSection);
+                strengthBar.style.background = 'var(--success)';
+                strengthText.textContent = "Strong - Great password!";
+                strengthText.style.color = 'var(--success)';
             }
-        }
-
-        // Role Selection check 
-        const selectedRole = document.querySelector('input[name="userType"]:checked');
-        const rootSection = document.querySelector('.user-type-grid').parentElement;
-        if (!selectedRole) {
-            // Can add specific styling for grid if nothing selected, but required attribute handles basic prevention
-            isFormValid = false;
-        }
-
-        return isFormValid;
+        });
     }
 
-    function setErrorFor(group, message) {
-        group.classList.add('error');
-        const errorElement = group.querySelector('.error-message');
-        if (errorElement) errorElement.textContent = message;
+    // 5. Form Validation & Submission
+    const form = document.getElementById('registrationForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const successModal = document.getElementById('successModal');
+    const termsCheck = document.getElementById('termsCheck');
+
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            let isValid = true;
+
+            // Simple Password Match check
+            if (passwordInput.value !== confirmPasswordInput.value) {
+                confirmPasswordInput.parentElement.classList.add('error');
+                isValid = false;
+            } else {
+                confirmPasswordInput.parentElement.classList.remove('error');
+            }
+
+            // Simple terms check (already handled by HTML5 required, but just in case)
+            if (!termsCheck.checked) {
+                isValid = false;
+            }
+
+            if (isValid) {
+                // Determine redirect path based on role
+                const selectedRole = document.querySelector('input[name="userRole"]:checked').value;
+                let redirectPath = '../donor-dashboard/index.html'; // Default
+
+                if (selectedRole === 'ngo') {
+                    redirectPath = '../ngo-dashboard/index.html';
+                } else if (selectedRole === 'admin') {
+                    redirectPath = '../admin-dashboard/index.html';
+                }
+
+                // Show loading state on button
+                const btnContent = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Setting up account...';
+                submitBtn.style.pointerEvents = 'none';
+                submitBtn.style.opacity = '0.9';
+
+                // Simulate API call delay
+                setTimeout(() => {
+                    // Show success modal
+                    successModal.style.display = 'flex';
+
+                    // Redirect after 2s loading bar finishes
+                    setTimeout(() => {
+                        window.location.href = redirectPath;
+                    }, 2000);
+
+                }, 1500);
+            }
+        });
+
+        // Clear confirm password error on input
+        confirmPasswordInput.addEventListener('input', () => {
+            confirmPasswordInput.parentElement.classList.remove('error');
+        });
     }
 
-    function setSuccessFor(group) {
-        group.classList.remove('error');
-    }
-
-    function clearValidation(group) {
-        group.classList.remove('error');
-    }
-
-    function simulateSubmission() {
-        const btnText = submitBtn.querySelector('.btn-text');
-        const btnIcon = submitBtn.querySelector('.btn-icon');
-        const loader = submitBtn.querySelector('.loader-icon');
-
-        submitBtn.classList.add('loading');
-        submitBtn.disabled = true;
-        btnText.textContent = 'Processing...';
-        btnIcon.classList.add('hidden');
-        loader.classList.remove('hidden');
-
-        setTimeout(() => {
-            // Restore btn state
-            submitBtn.classList.remove('loading');
-            submitBtn.disabled = false;
-            btnText.textContent = 'Create Account';
-            btnIcon.classList.remove('hidden');
-            loader.classList.add('hidden');
-
-            showToast();
-            form.reset();
-
-            // reset file UI
-            fileNameDisplay.textContent = 'Choose a file or drag it here';
-            fileWrapper.classList.remove('has-file');
-
-            // reset dynamic field
-            idProofSection.classList.add('hidden');
-            idProofSection.style.height = "0px";
-
-        }, 2000);
-    }
-
-    function showToast() {
-        toast.classList.remove('hidden');
-        setTimeout(() => {
-            toast.classList.add('hidden');
-        }, 4000);
-    }
 });
-
-// Dynamic CSS for shake auth animation
-const style = document.createElement('style');
-style.innerHTML = `
-@keyframes shake {
-  0%, 100% {transform: translateX(0);}
-  10%, 30%, 50%, 70%, 90% {transform: translateX(-5px);}
-  20%, 40%, 60%, 80% {transform: translateX(5px);}
-}
-`;
-document.head.appendChild(style);

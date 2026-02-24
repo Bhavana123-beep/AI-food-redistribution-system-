@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - AI Food Rescue</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Mobile Header -->
+    <header class="mobile-header">
+        <div class="header-left">
+            <a href="../index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
+            <h2>Notifications</h2>
+        </div>
+        <div class="header-right">
+            <button class="icon-btn" id="markAllReadBtn" title="Mark all as read">
+                <i class="fa-solid fa-check-double"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <div class="notifications-container">
+
+        <!-- Filter Tabs -->
+        <div class="filter-tabs">
+            <button class="tab-btn active" data-filter="all">All</button>
+            <button class="tab-btn" data-filter="unread">Unread <span class="badge"
+                    id="unreadCountBadge">2</span></button>
+            <button class="tab-btn" data-filter="matches">Matches</button>
+            <button class="tab-btn" data-filter="deliveries">Deliveries</button>
+        </div>
+
+        <!-- Notification List -->
+        <div class="notifications-list" id="notificationsList">
+
+            <!-- Item 1: Unread Match -->
+            <div class="notification-card unread" data-type="matches">
+                <div class="notif-icon bg-blue">
+                    <i class="fa-solid fa-handshake-angle"></i>
+                </div>
+                <div class="notif-content">
+                    <div class="notif-header">
+                        <h4>New AI Match Found!</h4>
+                        <span class="time">Just now</span>
+                    </div>
+                    <p>Hope NGO has automatically been matched with your 'Assorted Sandwiches' donation.</p>
+                    <div class="notif-actions">
+                        <button class="btn btn-primary btn-sm">View Details</button>
+                    </div>
+                </div>
+                <button class="mark-read-indicator" title="Mark as read"></button>
+            </div>
+
+            <!-- Item 2: Unread Assigned -->
+            <div class="notification-card unread" data-type="deliveries">
+                <div class="notif-icon bg-orange">
+                    <i class="fa-solid fa-user-check"></i>
+                </div>
+                <div class="notif-content">
+                    <div class="notif-header">
+                        <h4>Volunteer Assigned</h4>
+                        <span class="time">10 mins ago</span>
+                    </div>
+                    <p>Alex Johnson (Volunteer) has accepted the pickup. ETA: 15 mins.</p>
+                    <div class="notif-actions">
+                        <a href="../live-tracking/index.html" class="btn btn-outline btn-sm">Track Volunteer</a>
+                    </div>
+                </div>
+                <button class="mark-read-indicator" title="Mark as read"></button>
+            </div>
+
+            <!-- Item 3: Picked up -->
+            <div class="notification-card" data-type="deliveries">
+                <div class="notif-icon bg-purple">
+                    <i class="fa-solid fa-box-open"></i>
+                </div>
+                <div class="notif-content">
+                    <div class="notif-header">
+                        <h4>Food Picked Up</h4>
+                        <span class="time">2 hours ago</span>
+                    </div>
+                    <p>Your 'Fresh Vegetables Box' donation was successfully collected by the volunteer.</p>
+                </div>
+            </div>
+
+            <!-- Item 4: Delivered -->
+            <div class="notification-card" data-type="deliveries">
+                <div class="notif-icon bg-green">
+                    <i class="fa-solid fa-check-circle"></i>
+                </div>
+                <div class="notif-content">
+                    <div class="notif-header">
+                        <h4>Delivered Successfully</h4>
+                        <span class="time">Yesterday</span>
+                    </div>
+                    <p>Your donation has reached City Shelter. Thank you for your contribution!</p>
+                </div>
+            </div>
+
+            <!-- Item 5: System / General -->
+            <div class="notification-card" data-type="system">
+                <div class="notif-icon bg-gray">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <div class="notif-content">
+                    <div class="notif-header">
+                        <h4>Welcome to AI Food Rescue</h4>
+                        <span class="time">2 days ago</span>
+                    </div>
+                    <p>Complete your profile to receive better AI matching suggestions for your redistributions.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Empty State (Hidden initially) -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-icon"><i class="fa-regular fa-bell-slash"></i></div>
+            <h3>No notifications here</h3>
+            <p>We'll let you know when there's an update on your food redistribution activity.</p>
+        </div>
+
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+</body>
+
+</html>
