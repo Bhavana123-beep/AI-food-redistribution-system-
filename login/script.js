@@ -67,13 +67,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     let destination = '../index.html'; // Default fallback
                     if (roleSelect.value === 'donor') {
-                        destination = '../donor-dashboard/';
+                        destination = '../donor-dashboard/index.html';
                     } else if (roleSelect.value === 'ngo') {
-                        destination = '../ngo-dashboard/';
+                        destination = '../ngo-dashboard/index.html';
                     } else if (roleSelect.value === 'admin') {
-                        destination = '../admin-dashboard/';
+                        destination = '../admin-dashboard/index.html';
                     } else if (roleSelect.value === 'volunteer') {
-                        destination = '../live-tracking/'; // Volunteer routing
+                        destination = '../live-tracking/index.html'; // Volunteer routing
                     }
 
                     window.location.href = destination;

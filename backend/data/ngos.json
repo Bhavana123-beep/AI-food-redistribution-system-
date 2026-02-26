@@ -1,0 +1,20 @@
+[
+    {
+        "id": "ngo-001",
+        "name": "Helping Hands NGO",
+        "location": "Madhapur",
+        "contact": "9876543210"
+    },
+    {
+        "id": "ngo-002",
+        "name": "Care Foundation",
+        "location": "Kukatpally",
+        "contact": "8765432109"
+    },
+    {
+        "id": "ngo-003",
+        "name": "Food Bank NGO",
+        "location": "Gachibowli",
+        "contact": "7654321098"
+    }
+]
