@@ -170,6 +170,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     redirectPath = '../ngo-dashboard/index.html';
                 } else if (selectedRole === 'admin') {
                     redirectPath = '../admin-dashboard/index.html';
+                } else if (selectedRole === 'volunteer') {
+                    redirectPath = '../live-tracking/index.html';
                 }
 
                 // Show loading state on button

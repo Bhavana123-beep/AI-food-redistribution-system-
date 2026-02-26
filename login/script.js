@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     togglePasswordBtn.addEventListener('click', () => {
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordInput.setAttribute('type', type);
-        
+
         if (type === 'text') {
             toggleIcon.classList.remove('fa-eye');
             toggleIcon.classList.add('fa-eye-slash');
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const btn = form.querySelector('.submit-btn');
             const btnText = btn.querySelector('span');
             const btnIcon = btn.querySelector('.fa-arrow-right');
-            
+
             // Loading state
             btn.disabled = true;
             btnText.textContent = 'Verifying...';
@@ -60,13 +60,25 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.disabled = false;
                 btnText.textContent = 'Sign In';
                 btnIcon.className = 'fa-solid fa-arrow-right';
-                
+
                 showToast();
-                
-                // Reset form (Optional)
-                // form.reset();
-                // clearValidationClasses();
-                
+
+                // Redirect based on role after showing toast briefly
+                setTimeout(() => {
+                    let destination = '../index.html'; // Default fallback
+                    if (roleSelect.value === 'donor') {
+                        destination = '../donor-dashboard/';
+                    } else if (roleSelect.value === 'ngo') {
+                        destination = '../ngo-dashboard/';
+                    } else if (roleSelect.value === 'admin') {
+                        destination = '../admin-dashboard/';
+                    } else if (roleSelect.value === 'volunteer') {
+                        destination = '../live-tracking/'; // Volunteer routing
+                    }
+
+                    window.location.href = destination;
+                }, 1000); // Redirect 1s after login success
+
             }, 1500);
         } else {
             // Add shake animation if invalid
