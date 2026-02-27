@@ -20,6 +20,11 @@ const JWT_SECRET = process.env.JWT_SECRET || "foodrescue_secret_key_2026";
 app.use(cors());
 app.use(express.json());
 
+// Serve web frontend at root (React Native app uses API endpoints directly)
+const path = require("path");
+app.use(express.static(path.join(__dirname, "../frontend")));
+
+
 // ── JWT Auth Middleware ───────────────────────────────────────────
 const authenticateToken = (req, res, next) => {
   const authHeader = req.headers["authorization"];
@@ -137,7 +142,20 @@ app.post("/login", async (req, res) => {
     const userId = Object.keys(usersData)[0];
     const user = usersData[userId];
 
-    const passwordMatch = await bcrypt.compare(password, user.password);
+    // Support both bcrypt hashed (new) and plain-text (legacy) passwords
+    let passwordMatch = false;
+    const isHashed = user.password && user.password.startsWith('$2');
+    if (isHashed) {
+      passwordMatch = await bcrypt.compare(password, user.password);
+    } else {
+      // Legacy plain-text comparison
+      passwordMatch = (user.password === password);
+      if (passwordMatch) {
+        // Auto-upgrade to bcrypt for security
+        const upgraded = await bcrypt.hash(password, 10);
+        await db.ref(`users/${userId}`).update({ password: upgraded });
+      }
+    }
     if (!passwordMatch) {
       return res.status(401).json({ success: false, message: "Incorrect password." });
     }
@@ -159,23 +177,38 @@ app.post("/login", async (req, res) => {
 //  PROTECTED ROUTES (require valid JWT)
 // ══════════════════════════════════════════════════════════════════
 
-// Get all donations
-app.get("/donations", authenticateToken, async (req, res) => {
+// Get all donations — PUBLIC (no auth required so web frontend can load listings)
+app.get("/donations", async (req, res) => {
   try {
     const snapshot = await db.ref("donations").once("value");
     const data = snapshot.val() || {};
-    // Return as array for easier mobile consumption
     const list = Object.entries(data).map(([id, val]) => ({ id, ...val })).reverse();
-    res.json({ success: true, donations: list });
+    // Support both { donations: [...] } (mobile) and plain object (web legacy)
+    res.json({ success: true, donations: list, ...data });
   } catch (error) {
     res.status(500).json({ success: false, message: error.toString() });
   }
 });
 
-// Add donation (time-gated + auth)
-app.post("/donate", authenticateToken, checkDonationTime, async (req, res) => {
+// Optional auth middleware — attaches user if token present, but doesn't block if missing
+const optionalAuth = (req, res, next) => {
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1];
+  if (token) {
+    try { req.user = jwt.verify(token, JWT_SECRET); } catch (_) {}
+  }
+  next();
+};
+
+// Add donation (time-gated; auth optional — stores donorId if logged in)
+app.post("/donate", optionalAuth, checkDonationTime, async (req, res) => {
   try {
-    const data = { ...req.body, session: req.currentSession, donorId: req.user.id, createdAt: new Date().toISOString() };
+    const data = {
+      ...req.body,
+      session: req.currentSession,
+      donorId: req.user?.id || 'anonymous',
+      createdAt: new Date().toISOString()
+    };
     const ref = db.ref("donations").push();
     await ref.set(data);
     res.status(201).json({ success: true, message: "Donation logged successfully.", id: ref.key });
@@ -200,8 +233,8 @@ app.patch("/donations/:id/status", authenticateToken, async (req, res) => {
   }
 });
 
-// Get notifications (derived from donations for the requesting user)
-app.get("/notifications", authenticateToken, async (req, res) => {
+// Get notifications — PUBLIC
+app.get("/notifications", async (req, res) => {
   try {
     const snapshot = await db.ref("donations").once("value");
     const data = snapshot.val() || {};

@@ -197,7 +197,13 @@ document.addEventListener('DOMContentLoaded', () => {
             let totalMeals = 0;
             let activeCount = 0;
 
-            const items = Object.entries(data || {}).map(([id, val]) => ({id, ...val})).reverse();
+            // Handle both new { donations: [...] } format and legacy raw object
+            let items;
+            if (Array.isArray(data.donations)) {
+                items = data.donations; // new format from refactored backend
+            } else {
+                items = Object.entries(data || {}).filter(([k]) => k !== 'success' && k !== 'donations').map(([id, val]) => ({id, ...val})).reverse();
+            }
 
             // Populate table and stats
             items.forEach((item) => {

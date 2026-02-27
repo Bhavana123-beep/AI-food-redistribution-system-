@@ -71,10 +71,22 @@ document.addEventListener('DOMContentLoaded', () => {
                     btnText.textContent = 'Success';
                     btnIcon.className = 'fa-solid fa-check';
 
+                    // Store token and user in session storage for dashboard use
+                    sessionStorage.setItem('token', data.token);
+                    sessionStorage.setItem('user', JSON.stringify(data.user));
+
                     showToast();
 
+                    // Determine redirect based on role returned from backend
+                    const role = data.user?.role;
+                    let destination = '../index.html';
+                    if (role === 'donor' || role === 'restaurant' || role === 'household') destination = '../donor-dashboard/index.html';
+                    else if (role === 'ngo') destination = '../ngo-dashboard/index.html';
+                    else if (role === 'admin') destination = '../admin-dashboard/index.html';
+                    else if (role === 'volunteer') destination = '../live-tracking/index.html';
+
                     setTimeout(() => {
-                        window.location.href = data.redirect || '../index.html';
+                        window.location.href = destination;
                     }, 1000);
                 } else {
                     throw new Error(data.message || "Invalid credentials");
