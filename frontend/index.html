@@ -28,9 +28,9 @@
                 <li><a href="#features">Features</a></li>
                 <li><a href="#about">About Waste</a></li>
                 <!-- We simulate login being at ./login/index.html as developed earlier -->
-                <li><a href="quick-donate/index.html" class="btn btn-quick">⚡ Quick Donate</a></li>
-                <li><a href="login/index.html" class="btn btn-outline">Login</a></li>
+                <li><a href="login/index.html" class="btn btn-outline">Verified Login</a></li>
                 <li><a href="register/index.html" class="btn btn-primary">Register</a></li>
+                <li><a href="quick-donate/index.html" class="btn btn-quick">⚡ Quick Donate</a></li>
             </ul>
             <div class="mobile-menu-btn">
                 <i class="fa-solid fa-bars"></i>
@@ -52,11 +52,29 @@
                 <p>Reduce food waste and feed the needy using intelligent technology. Connect restaurants, households,
                     and hostels with NGOs seamlessly.</p>
                 <div class="hero-actions">
-                    <a href="quick-donate/index.html" class="btn btn-quick-hero btn-lg">⚡ Quick Donate <i
-                            class="fa-solid fa-bolt"></i></a>
-                    <a href="register/index.html" class="btn btn-primary btn-lg">Join the Network <i
-                            class="fa-solid fa-arrow-right"></i></a>
-                    <a href="#about" class="btn btn-secondary btn-lg">Learn More</a>
+                    <div class="dual-cta">
+                        <div class="cta-card cta-verified">
+                            <div class="cta-icon"><i class="fa-solid fa-building"></i></div>
+                            <div class="cta-text">
+                                <h4>Hotels, NGOs & Organisations</h4>
+                                <p>Full account with dashboard access</p>
+                            </div>
+                            <div class="cta-btns">
+                                <a href="login/index.html" class="btn btn-white-outline">Login</a>
+                                <a href="register/index.html" class="btn btn-primary-sm">Register</a>
+                            </div>
+                        </div>
+                        <div class="cta-card cta-quick">
+                            <div class="cta-icon quick-icon"><i class="fa-solid fa-bolt"></i></div>
+                            <div class="cta-text">
+                                <h4>Donating from Home?</h4>
+                                <p>No sign-up needed. Just phone + address.</p>
+                            </div>
+                            <a href="quick-donate/index.html" class="btn btn-quick-lg">
+                                <i class="fa-solid fa-bolt"></i> Quick Donate
+                            </a>
+                        </div>
+                    </div>
                 </div>
                 <div class="quick-donate-notice">
                     <i class="fa-solid fa-circle-info"></i>
