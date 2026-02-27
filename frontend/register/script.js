@@ -180,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 submitBtn.style.pointerEvents = 'none';
                 submitBtn.style.opacity = '0.9';
 
-                // Send request to Firebase Node.js backend
+                // Send request to Node.js backend (MongoDB)
                 fetch('http://localhost:5000/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
