@@ -130,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
         submitFoodBtn.disabled = true;
 
         try {
-            // Send Data to the Firebase/Node.js Backend
+            // Send Data to the Node.js Backend (MongoDB)
             const response = await fetch('http://localhost:5000/donate', {
                 method: 'POST',
                 headers: {
