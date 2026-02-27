@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation & Distribution History - AI Food Rescue</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Top-level Background Decorative Blobs for Premium Feel -->
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div class="bg-blob blob-3"></div>
+
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar glass-panel" id="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="logo">
+                    <div class="logo-icon"><i class="fa-solid fa-leaf"></i></div>
+                    <span class="logo-text">Food<span>Rescue</span></span>
+                </a>
+                <button class="close-sidebar-btn" id="closeSidebarBtn">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="../donor-dashboard/index.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                    <li><a href="../donor-dashboard/index.html"><i class="fa-solid fa-cloud-arrow-up"></i> Upload
+                            Food</a></li>
+                    <li class="active"><a href="../history-page/index.html"><i
+                                class="fa-solid fa-clock-rotate-left"></i> History</a></li>
+                    <li><a href="../login/index.html"><i class="fa-solid fa-user"></i> Profile</a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="../login/index.html" class="logout-btn"><i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    Logout</a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+
+            <!-- Top Navbar -->
+            <header class="topbar glass-panel">
+                <div class="topbar-left">
+                    <button class="menu-trigger" id="menuTriggerBtn">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+                    <div>
+                        <h1 class="page-title">Distribution History</h1>
+                        <p class="page-subtitle">Track your impact and past redistributions.</p>
+                    </div>
+                </div>
+
+                <div class="topbar-right">
+                    <div class="search-bar">
+                        <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                        <input type="text" id="searchInput" placeholder="Search food, location, NGO...">
+                    </div>
+                    <button class="btn btn-primary shadow-glow" id="downloadReportBtn" title="For Admins">
+                        <i class="fa-solid fa-file-arrow-down"></i> <span>Export Report</span>
+                    </button>
+                    <!-- Notification Bell with Notification Badge -->
+                    <div class="notification-wrapper">
+                        <button class="icon-btn unread-alert"><i class="fa-regular fa-bell"></i></button>
+                    </div>
+                    <div class="profile-avatar">OM</div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-body">
+
+                <!-- Statistics Summary -->
+                <div class="stats-grid">
+                    <div class="stat-card glass-panel animated-entry" style="animation-delay: 0.1s;">
+                        <div class="stat-icon-wrapper bg-gradient-green">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Total Food Donated</p>
+                            <h3 class="stat-value" id="statDonated">0 <span class="unit">lbs</span></h3>
+                        </div>
+                    </div>
+
+                    <div class="stat-card glass-panel animated-entry" style="animation-delay: 0.2s;">
+                        <div class="stat-icon-wrapper bg-gradient-orange">
+                            <i class="fa-solid fa-plate-wheat"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Total Meals Served</p>
+                            <h3 class="stat-value" id="statMeals">0</h3>
+                        </div>
+                    </div>
+
+                    <div class="stat-card glass-panel animated-entry" style="animation-delay: 0.3s;">
+                        <div class="stat-icon-wrapper bg-gradient-brand">
+                            <i class="fa-solid fa-leaf"></i>
+                        </div>
+                        <div class="stat-info">
+                            <p class="stat-label">Food Saved from Waste</p>
+                            <h3 class="stat-value" id="statWaste">0 <span class="unit">kg</span></h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filters Section -->
+                <div class="filters-container glass-panel animated-entry" style="animation-delay: 0.4s;">
+                    <div class="filter-group">
+                        <label for="dateFilter"><i class="fa-regular fa-calendar"></i> Date Range</label>
+                        <select id="dateFilter" class="custom-select">
+                            <option value="all">All Time</option>
+                            <option value="7days">Last 7 Days</option>
+                            <option value="30days">Last 30 Days</option>
+                            <option value="thisYear">This Year</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="partnerFilter"><i class="fa-solid fa-handshake"></i> Partner (NGO/Donor)</label>
+                        <select id="partnerFilter" class="custom-select">
+                            <option value="all">All Partners</option>
+                            <option value="Hope NGO">Hope NGO</option>
+                            <option value="City Shelter">City Shelter</option>
+                            <option value="Community Kitchen">Community Kitchen</option>
+                        </select>
+                    </div>
+
+                    <div class="filter-group">
+                        <label for="statusFilter"><i class="fa-solid fa-signal"></i> Delivery Status</label>
+                        <select id="statusFilter" class="custom-select">
+                            <option value="all">All Statuses</option>
+                            <option value="Delivered">Delivered</option>
+                            <option value="Picked">Picked Up</option>
+                            <option value="Pending">Pending Match</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- History Records List (Cards Format for modern UI) -->
+                <div class="history-feed" id="historyFeed">
+
+                    <!-- Dynamic Content via API -->
+
+                </div>
+
+                <!-- Empty State for Filters -->
+                <div class="empty-state" id="emptyState" style="display: none;">
+                    <div class="empty-icon"><i class="fa-solid fa-folder-open"></i></div>
+                    <h3>No records found</h3>
+                    <p>Try adjusting your search or filters to find what you're looking for.</p>
+                    <button class="btn btn-outline mt-3" id="clearFiltersBtn">Clear Filters</button>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script type="module" src="../firebase-init.js"></script>
+</body>
+
+</html>

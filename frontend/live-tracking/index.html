@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Tracking - AI Food Rescue</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Top Navbar -->
+    <nav class="navbar">
+        <a href="../index.html" class="logo">
+            <i class="fa-solid fa-leaf"></i> Food<span>Rescue</span>
+        </a>
+        <div class="nav-actions">
+            <span class="order-id">Donation #FR-8924</span>
+            <button class="btn btn-outline btn-sm"><i class="fa-solid fa-phone"></i> Contact Support</button>
+        </div>
+    </nav>
+
+    <!-- Main Live Tracking Content -->
+    <div class="tracking-container">
+
+        <!-- Left Panel: Delivery Info & Status -->
+        <div class="tracking-panel glass-effect">
+            <div class="panel-header">
+                <h2>Live Tracking</h2>
+                <span class="live-badge"><i class="fa-solid fa-circle-dot fa-fade"></i> Live Update</span>
+            </div>
+
+            <!-- Enhanced ETA Section -->
+            <div class="eta-box">
+                <p class="eta-label">Estimated Delivery Time</p>
+                <h3 class="eta-time" id="etaDisplay">15 mins</h3>
+                <p class="eta-subtext">Optimized route selected by AI</p>
+            </div>
+
+            <!-- Route Details -->
+            <div class="route-details">
+                <div class="route-point">
+                    <div class="point-icon"><i class="fa-solid fa-store" style="color: var(--secondary);"></i></div>
+                    <div class="point-info">
+                        <h5>Pickup: Oasis Meals</h5>
+                        <p>123 Main St, Downtown Sector</p>
+                    </div>
+                </div>
+                <div class="route-line"></div>
+                <div class="route-point">
+                    <div class="point-icon"><i class="fa-solid fa-house-medical" style="color: var(--primary);"></i>
+                    </div>
+                    <div class="point-info">
+                        <h5>Drop-off: Hope NGO</h5>
+                        <p>87 Shelter Ave, Westside</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interactive Status Tracker -->
+            <div class="status-tracker">
+                <div class="status-step completed">
+                    <div class="step-icon"><i class="fa-solid fa-check"></i></div>
+                    <div class="step-text">
+                        <h5>Food Matched</h5>
+                        <p>AI identified the best recipient.</p>
+                    </div>
+                </div>
+                <div class="status-line completed"></div>
+
+                <div class="status-step completed">
+                    <div class="step-icon"><i class="fa-solid fa-box-open"></i></div>
+                    <div class="step-text">
+                        <h5>Picked Up</h5>
+                        <p>Volunteer collected the donation.</p>
+                    </div>
+                </div>
+                <!-- Dynamic active line -->
+                <div class="status-line active-line" id="transitLine">
+                    <div class="progress-fill"></div>
+                </div>
+
+                <div class="status-step active" id="transitStep">
+                    <div class="step-icon"><i class="fa-solid fa-truck-fast icon-pulse"></i></div>
+                    <div class="step-text">
+                        <h5>On the Way</h5>
+                        <p>Volunteer is heading to the NGO.</p>
+                    </div>
+                </div>
+                <div class="status-line pending" id="deliveredLine"></div>
+
+                <div class="status-step pending" id="deliveredStep">
+                    <div class="step-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+                    <div class="step-text">
+                        <h5>Delivered</h5>
+                        <p>Food successfully redistributed.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Volunteer Details -->
+            <div class="volunteer-card">
+                <div class="volunteer-avatar">AJ</div>
+                <div class="volunteer-info">
+                    <h5>Alex Johnson</h5>
+                    <p>Verified Volunteer <i class="fa-solid fa-circle-check" style="color: var(--primary);"></i></p>
+                </div>
+                <button class="btn-icon" title="Call"><i class="fa-solid fa-phone"></i></button>
+            </div>
+
+            <div class="simulation-controls">
+                <button class="btn btn-outline btn-sm w-100 mt-3" id="simDeliveredBtn">Simulate Delivery
+                    Completion</button>
+            </div>
+        </div>
+
+        <!-- Right Panel: The Map -->
+        <div class="map-container">
+            <!-- Simulated interactive Map layer -->
+            <div class="map-interactive-view">
+                <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"
+                    alt="Map View" class="map-bg">
+
+                <!-- Route overlay -->
+                <svg class="route-svg" viewBox="0 0 1000 800" preserveAspectRatio="none">
+                    <!-- Background path for the full route -->
+                    <path d="M 300,600 C 400,500 450,450 600,300 C 700,200 750,250 850,150" fill="none"
+                        class="route-path-bg" />
+                    <!-- Foreground animated path -->
+                    <path d="M 300,600 C 400,500 450,450 600,300 C 700,200 750,250 850,150" fill="none"
+                        class="route-path-fg" id="liveRoutePath" stroke-dasharray="1000" stroke-dashoffset="1000" />
+                </svg>
+
+                <div class="map-elements">
+                    <!-- Donor Pin (Start) -->
+                    <div class="map-pin donor-pin" style="top: 75%; left: 30%;"><i class="fa-solid fa-store"></i>
+                        <div class="pin-label">Oasis Meals</div>
+                    </div>
+
+                    <!-- Moving Vehicle Pin -->
+                    <div class="map-pin vehicle-pin moving" id="liveVehicle" style="top: 75%; left: 30%;">
+                        <i class="fa-solid fa-truck"></i>
+                    </div>
+
+                    <!-- NGO Pin (Destination) -->
+                    <div class="map-pin ngo-pin" style="top: 18.75%; left: 85%;"><i
+                            class="fa-solid fa-house-medical"></i>
+                        <div class="pin-label">Hope NGO</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script type="module" src="../firebase-init.js"></script>
+</body>
+
+</html>
