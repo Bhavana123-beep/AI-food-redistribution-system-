@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Food Rescue Network</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div class="background-overlay"></div>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="card-header">
+                <div class="logo">
+                    <i class="fa-solid fa-seedling"></i>
+                </div>
+                <h2>Welcome Back</h2>
+                <p>Together we can end hunger.</p>
+            </div>
+
+            <form id="loginForm" class="login-form">
+
+                <div class="form-group role-selector-group">
+                    <label for="role">I am a...</label>
+                    <div class="custom-select-wrapper">
+                        <select id="role" name="role" required>
+                            <option value="" disabled selected>Select your role</option>
+                            <option value="donor">Donor</option>
+                            <option value="ngo">NGO</option>
+                            <option value="volunteer">Volunteer</option>
+                            <option value="admin">Admin</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down select-icon"></i>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <div class="input-wrapper">
+                        <i class="fa-regular fa-envelope input-icon"></i>
+                        <input type="email" id="email" name="email" placeholder="name@example.com" autocomplete="email">
+                        <i class="fa-solid fa-circle-check valid-icon"></i>
+                        <i class="fa-solid fa-circle-exclamation invalid-icon"></i>
+                    </div>
+                    <span class="error-message" id="emailError">Please enter a valid email address.</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fa-solid fa-lock input-icon"></i>
+                        <input type="password" id="password" name="password" placeholder="••••••••"
+                            autocomplete="current-password">
+                        <button type="button" class="toggle-password" id="togglePassword"
+                            aria-label="Toggle password visibility">
+                            <i class="fa-regular fa-eye"></i>
+                        </button>
+                    </div>
+                    <span class="error-message" id="passwordError">Password is required (min 6 chars).</span>
+                </div>
+
+                <div class="form-actions">
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span>Sign In</span>
+                    <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </form>
+
+            <div class="card-footer">
+                <p>New to our community? <a href="#" class="register-link">Create an account</a></p>
+            </div>
+
+            <div id="toast" class="toast hidden">
+                <div class="toast-content">
+                    <i class="fa-solid fa-check-circle"></i>
+                    <div class="message">
+                        <span class="text text-1">Success</span>
+                        <span class="text text-2">Login successful!</span>
+                    </div>
+                </div>
+                <i class="fa-solid fa-xmark close-toast"></i>
+                <div class="progress"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script type="module" src="../firebase-init.js"></script>
+</body>
+
+</html>
