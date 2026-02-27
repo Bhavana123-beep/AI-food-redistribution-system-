@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Donate – FoodRescue AI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0a2e1a 0%, #1a5c35 50%, #0d3d22 100%);
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 20px;
+            padding-top: 30px;
+        }
+
+        .bg-shape {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.15;
+            pointer-events: none;
+        }
+
+        .bg-shape.s1 {
+            width: 400px;
+            height: 400px;
+            background: #4ade80;
+            top: -100px;
+            left: -100px;
+        }
+
+        .bg-shape.s2 {
+            width: 300px;
+            height: 300px;
+            background: #22c55e;
+            bottom: -80px;
+            right: -80px;
+        }
+
+        .bg-shape.s3 {
+            width: 250px;
+            height: 250px;
+            background: #fbbf24;
+            top: 40%;
+            right: -80px;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            padding: 36px 32px;
+            width: 100%;
+            max-width: 480px;
+            color: #fff;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            background: #22c55e;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 17px;
+        }
+
+        .logo-text {
+            font-size: 17px;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .logo-text span {
+            color: #4ade80;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(74, 222, 128, 0.2);
+            border: 1px solid rgba(74, 222, 128, 0.4);
+            color: #4ade80;
+            font-size: 11px;
+            font-weight: 600;
+            padding: 4px 12px;
+            border-radius: 100px;
+            margin-bottom: 12px;
+        }
+
+        .badge-orange {
+            background: rgba(251, 191, 36, 0.15);
+            border-color: rgba(251, 191, 36, 0.4);
+            color: #fbbf24;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 22px;
+            line-height: 1.5;
+        }
+
+        .steps {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 22px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        .step.active {
+            color: #4ade80;
+        }
+
+        .step.done {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .step-num {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+        }
+
+        .step.active .step-num {
+            background: #22c55e;
+            color: #fff;
+        }
+
+        .step.done .step-num {
+            background: rgba(74, 222, 128, 0.3);
+        }
+
+        .step-line {
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .step-line.done {
+            background: rgba(74, 222, 128, 0.5);
+        }
+
+        .form-group {
+            margin-bottom: 14px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.75);
+            margin-bottom: 6px;
+        }
+
+        .input-wrap {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 11px;
+            padding: 0 13px;
+            height: 48px;
+            transition: border-color 0.2s;
+        }
+
+        .input-wrap:focus-within {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.08);
+        }
+
+        .input-wrap i {
+            color: rgba(255, 255, 255, 0.35);
+            font-size: 15px;
+            margin-right: 9px;
+            min-width: 16px;
+        }
+
+        .input-wrap input,
+        .input-wrap select {
+            flex: 1;
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 14px;
+            font-family: 'Outfit', sans-serif;
+            height: 100%;
+        }
+
+        .input-wrap input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .input-wrap select option {
+            background: #1a3a2a;
+        }
+
+        textarea.ta {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 11px;
+            padding: 12px 13px;
+            color: #fff;
+            font-size: 13px;
+            font-family: 'Outfit', sans-serif;
+            resize: vertical;
+            min-height: 72px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        textarea.ta:focus {
+            border-color: #4ade80;
+            background: rgba(74, 222, 128, 0.08);
+        }
+
+        textarea.ta::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        .opt {
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.3);
+            font-weight: 400;
+            margin-left: 3px;
+        }
+
+        .btn-primary {
+            width: 100%;
+            height: 50px;
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            border: none;
+            border-radius: 13px;
+            color: #fff;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            margin-top: 4px;
+            transition: transform .15s, box-shadow .15s;
+            box-shadow: 0 4px 20px rgba(34, 197, 94, .35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(34, 197, 94, .45);
+        }
+
+        .btn-primary:disabled {
+            opacity: .6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 16px;
+        }
+
+        .back-link a {
+            color: rgba(255, 255, 255, .4);
+            font-size: 12px;
+            text-decoration: none;
+        }
+
+        .back-link a:hover {
+            color: #4ade80;
+        }
+
+        .info-box {
+            background: rgba(74, 222, 128, .08);
+            border: 1px solid rgba(74, 222, 128, .2);
+            border-radius: 11px;
+            padding: 11px 13px;
+            display: flex;
+            gap: 9px;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            font-size: 12px;
+            color: rgba(255, 255, 255, .65);
+            line-height: 1.5;
+        }
+
+        .info-box i {
+            color: #4ade80;
+            margin-top: 1px;
+            flex-shrink: 0;
+        }
+
+        .info-box a {
+            color: #4ade80;
+        }
+
+        .alert-msg {
+            padding: 9px 12px;
+            border-radius: 9px;
+            font-size: 12px;
+            margin-bottom: 12px;
+            display: none;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, .15);
+            border: 1px solid rgba(239, 68, 68, .3);
+            color: #f87171;
+        }
+
+        /* ─── Hidden phases ─────────── */
+        #phase2,
+        #successView,
+        #fallbackView {
+            display: none;
+        }
+
+        /* ─── Success ─────────────── */
+        #successView {
+            text-align: center;
+        }
+
+        .success-icon {
+            font-size: 52px;
+            margin-bottom: 12px;
+        }
+
+        .success-title {
+            font-size: 20px;
+            font-weight: 800;
+            margin-bottom: 6px;
+        }
+
+        .success-sub {
+            font-size: 13px;
+            color: rgba(255, 255, 255, .6);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .btn-ghost {
+            width: 100%;
+            height: 46px;
+            background: transparent;
+            border: 1.5px solid rgba(255, 255, 255, .2);
+            border-radius: 12px;
+            color: rgba(255, 255, 255, .7);
+            font-size: 13px;
+            font-weight: 600;
+            font-family: 'Outfit', sans-serif;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .btn-ghost:hover {
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+
+        /* ─── NGO Waiting Timer ──────── */
+        .ngo-status-box {
+            background: rgba(34, 197, 94, .1);
+            border: 1px solid rgba(34, 197, 94, .25);
+            border-radius: 14px;
+            padding: 18px 16px;
+            margin-top: 18px;
+            text-align: center;
+        }
+
+        .ngo-status-label {
+            font-size: 12px;
+            color: rgba(255, 255, 255, .5);
+            margin-bottom: 8px;
+        }
+
+        .timer-ring {
+            position: relative;
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 10px;
+        }
+
+        .timer-ring svg {
+            transform: rotate(-90deg);
+        }
+
+        .timer-ring .bg-circle {
+            fill: none;
+            stroke: rgba(255, 255, 255, .08);
+            stroke-width: 5;
+        }
+
+        .timer-ring .fg-circle {
+            fill: none;
+            stroke: #22c55e;
+            stroke-width: 5;
+            stroke-linecap: round;
+            stroke-dasharray: 195;
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset .5s linear;
+        }
+
+        .timer-text {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .timer-sub {
+            font-size: 9px;
+            color: rgba(255, 255, 255, .4);
+        }
+
+        .ngo-status-msg {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4ade80;
+            margin-bottom: 4px;
+        }
+
+        .ngo-status-hint {
+            font-size: 11px;
+            color: rgba(255, 255, 255, .4);
+        }
+
+        .btn-skip {
+            margin-top: 12px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, .15);
+            border-radius: 8px;
+            color: rgba(255, 255, 255, .5);
+            font-size: 11px;
+            font-family: 'Outfit', sans-serif;
+            padding: 6px 14px;
+            cursor: pointer;
+            transition: .2s;
+        }
+
+        .btn-skip:hover {
+            color: #fbbf24;
+            border-color: rgba(251, 191, 36, .4);
+        }
+
+        /* ─── Fallback / Smart Suggestions ─── */
+        #fallbackView {}
+
+        .fallback-header {
+            background: linear-gradient(135deg, rgba(251, 191, 36, .12), rgba(234, 88, 12, .08));
+            border: 1px solid rgba(251, 191, 36, .3);
+            border-radius: 14px;
+            padding: 16px 14px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .fallback-header .alert-icon {
+            width: 42px;
+            height: 42px;
+            background: rgba(251, 191, 36, .15);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .fallback-header h3 {
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 3px;
+            color: #fbbf24;
+        }
+
+        .fallback-header p {
+            font-size: 12px;
+            color: rgba(255, 255, 255, .55);
+            line-height: 1.4;
+        }
+
+        .fallback-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, .8);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fallback-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, .08);
+        }
+
+        .location-card {
+            background: rgba(255, 255, 255, .06);
+            border: 1px solid rgba(255, 255, 255, .1);
+            border-radius: 14px;
+            padding: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            transition: background .2s, transform .2s;
+        }
+
+        .location-card:hover {
+            background: rgba(255, 255, 255, .1);
+            transform: translateX(3px);
+        }
+
+        .loc-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .loc-icon.train {
+            background: rgba(99, 102, 241, .2);
+        }
+
+        .loc-icon.bus {
+            background: rgba(59, 130, 246, .2);
+        }
+
+        .loc-icon.temple {
+            background: rgba(251, 191, 36, .15);
+        }
+
+        .loc-icon.shelter {
+            background: rgba(249, 115, 22, .15);
+        }
+
+        .loc-icon.food {
+            background: rgba(34, 197, 94, .15);
+        }
+
+        .loc-icon.park {
+            background: rgba(16, 185, 129, .15);
+        }
+
+        .loc-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .loc-name {
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .loc-meta {
+            font-size: 11px;
+            color: rgba(255, 255, 255, .45);
+            display: flex;
+            gap: 10px;
+        }
+
+        .loc-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-nav {
+            flex-shrink: 0;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            border-radius: 10px;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Outfit', sans-serif;
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: .2s;
+            white-space: nowrap;
+            text-decoration: none;
+        }
+
+        .btn-nav:hover {
+            transform: scale(1.04);
+            box-shadow: 0 4px 14px rgba(59, 130, 246, .4);
+        }
+
+        .loading-suggestions {
+            text-align: center;
+            padding: 30px 0;
+            color: rgba(255, 255, 255, .4);
+            font-size: 13px;
+        }
+
+        .loading-suggestions i {
+            display: block;
+            font-size: 26px;
+            margin-bottom: 10px;
+            color: #4ade80;
+        }
+
+        .no-location-warning {
+            background: rgba(239, 68, 68, .1);
+            border: 1px solid rgba(239, 68, 68, .25);
+            border-radius: 11px;
+            padding: 12px 14px;
+            font-size: 12px;
+            color: #f87171;
+            line-height: 1.5;
+        }
+
+        .ai-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(139, 92, 246, .15);
+            border: 1px solid rgba(139, 92, 246, .3);
+            color: #a78bfa;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 9px;
+            border-radius: 100px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-shape s1"></div>
+    <div class="bg-shape s2"></div>
+    <div class="bg-shape s3"></div>
+
+    <div class="card">
+        <a href="../index.html" class="logo">
+            <div class="logo-icon"><i class="fa-solid fa-leaf"></i></div>
+            <div class="logo-text">Food<span>Rescue</span> AI</div>
+        </a>
+
+        <!-- ════════ PHASE 1: Contact Info ════════ -->
+        <div id="phase1">
+            <span class="badge"><i class="fa-solid fa-bolt"></i> Quick Donate</span>
+            <h1>Donate Food Instantly ⚡</h1>
+            <p class="subtitle">No sign-up needed. Enter your details and we'll arrange pickup from nearby NGOs.</p>
+            <div class="steps">
+                <div class="step active">
+                    <div class="step-num">1</div> Your Info
+                </div>
+                <div class="step-line" id="sl1"></div>
+                <div class="step" id="step2ind">
+                    <div class="step-num">2</div> Food Details
+                </div>
+            </div>
+            <div class="info-box">
+                <i class="fa-solid fa-circle-info"></i>
+                <span>This is for <strong>occasional home donors</strong>. Hotels, restaurants &amp; organisations —
+                    please use the <a href="../login/index.html">full login</a>.</span>
+            </div>
+            <div id="p1err" class="alert-msg alert-error"></div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-phone" style="color:#4ade80;margin-right:5px"></i>Phone Number *</label>
+                <div class="input-wrap"><i class="fa-solid fa-mobile-screen-button"></i><input type="tel" id="phone"
+                        placeholder="e.g. 9876543210" maxlength="15"></div>
+            </div>
+            <div class="form-group">
+                <label><i class="fa-solid fa-location-dot" style="color:#4ade80;margin-right:5px"></i>Pickup Address
+                    *</label>
+                <textarea class="ta" id="address" placeholder="Enter your full address for pickup…"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Your Name <span class="opt">(optional)</span></label>
+                <div class="input-wrap"><i class="fa-regular fa-user"></i><input type="text" id="donorName"
+                        placeholder="e.g. Priya Sharma"></div>
+            </div>
+            <button class="btn-primary" onclick="goToPhase2()"><i class="fa-solid fa-arrow-right"></i> Continue to Food
+                Details</button>
+            <div class="back-link"><a href="../index.html"><i class="fa-solid fa-arrow-left"></i> Back to Home</a></div>
+        </div>
+
+        <!-- ════════ PHASE 2: Food Details ════════ -->
+        <div id="phase2">
+            <span class="badge"><i class="fa-solid fa-bowl-food"></i> Food Details</span>
+            <h1>What are you donating? 🍱</h1>
+            <p class="subtitle">Quick details so an NGO or volunteer can pick it up.</p>
+            <div class="steps">
+                <div class="step done">
+                    <div class="step-num"><i class="fa-solid fa-check" style="font-size:9px"></i></div> Your Info
+                </div>
+                <div class="step-line done"></div>
+                <div class="step active">
+                    <div class="step-num">2</div> Food Details
+                </div>
+            </div>
+            <div id="p2err" class="alert-msg alert-error"></div>
+            <div class="form-group">
+                <label>Food Item / Description *</label>
+                <div class="input-wrap"><i class="fa-solid fa-utensils"></i><input type="text" id="foodItem"
+                        placeholder="e.g. Rice and dal, birthday cake…"></div>
+            </div>
+            <div class="form-group">
+                <label>Food Type *</label>
+                <div class="input-wrap"><i class="fa-solid fa-tag"></i>
+                    <select id="foodType">
+                        <option value="">Select type…</option>
+                        <option value="Cooked Food">Cooked / Prepared Food</option>
+                        <option value="Packaged Food">Packaged / Sealed Food</option>
+                        <option value="Raw Vegetables">Raw Vegetables / Fruits</option>
+                        <option value="Bakery">Bakery / Sweets / Snacks</option>
+                        <option value="Beverages">Beverages / Drinks</option>
+                        <option value="Others">Others</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Approximate Quantity *</label>
+                <div class="input-wrap"><i class="fa-solid fa-bowl-rice"></i><input type="text" id="quantity"
+                        placeholder="e.g. 10 servings, 2 kg, 5 packets"></div>
+            </div>
+            <div class="form-group">
+                <label>Available Until <span class="opt">(time / date)</span></label>
+                <div class="input-wrap"><i class="fa-regular fa-clock"></i><input type="text" id="expiryTime"
+                        placeholder="e.g. 8:00 PM today, within 2 hours"></div>
+            </div>
+            <button class="btn-primary" id="submitBtn" onclick="submitQuickDonation()"><i
+                    class="fa-solid fa-paper-plane"></i> Submit Donation</button>
+            <div class="back-link"><a href="#" onclick="backToPhase1()"><i class="fa-solid fa-arrow-left"></i> Edit
+                    Contact Info</a></div>
+        </div>
+
+        <!-- ════════ SUCCESS + NGO WAIT + FALLBACK ════════ -->
+        <div id="successView">
+            <div style="text-align:center">
+                <div class="success-icon">🎉</div>
+                <div class="success-title">Donation Submitted!</div>
+                <div class="success-sub">Thank you! We're alerting NGOs near you. We'll contact you at <strong
+                        id="successPhone"></strong> once a pickup is arranged.</div>
+            </div>
+
+            <!-- NGO Waiting Timer -->
+            <div class="ngo-status-box" id="ngoWaitBox">
+                <div class="ngo-status-label">Searching for nearby NGOs</div>
+                <div class="timer-ring">
+                    <svg width="70" height="70" viewBox="0 0 70 70">
+                        <circle class="bg-circle" cx="35" cy="35" r="31" />
+                        <circle class="fg-circle" id="timerArc" cx="35" cy="35" r="31" />
+                    </svg>
+                    <div class="timer-text">
+                        <span id="timerCount">60</span>
+                        <span class="timer-sub">sec</span>
+                    </div>
+                </div>
+                <div class="ngo-status-msg" id="ngoMsg">🔍 Pinging 5 NGOs nearby…</div>
+                <div class="ngo-status-hint">AI matching in progress — you'll be notified instantly</div>
+                <button class="btn-skip" onclick="triggerFallback()">Skip wait → Show drop-off points</button>
+            </div>
+
+            <div style="margin-top:14px">
+                <button class="btn-ghost" onclick="window.location.href='../index.html'"><i
+                        class="fa-solid fa-house"></i> Back to Home</button>
+            </div>
+        </div>
+
+        <!-- ════════ FALLBACK: SMART SUGGESTIONS ════════ -->
+        <div id="fallbackView">
+            <div class="fallback-header">
+                <div class="alert-icon">⚠️</div>
+                <div>
+                    <h3>No NGO Available Nearby</h3>
+                    <p>Don't let the food go to waste! Our AI has found nearby high-need locations where you can
+                        distribute the food directly.</p>
+                </div>
+            </div>
+
+            <div class="fallback-title">
+                📍 Nearby Drop-off Locations
+                <span class="ai-chip"><i class="fa-solid fa-robot"></i> AI Suggested</span>
+            </div>
+
+            <div id="suggestionsList">
+                <div class="loading-suggestions">
+                    <i class="fa-solid fa-satellite-dish fa-spin"></i>
+                    Scanning nearby locations using location intelligence…
+                </div>
+            </div>
+
+            <div style="margin-top:16px">
+                <button class="btn-ghost" onclick="window.location.href='../index.html'"><i
+                        class="fa-solid fa-house"></i> Back to Home</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ══════════════════════════════════════════════
+        //  GLOBAL STATE
+        // ══════════════════════════════════════════════
+        let donorCoords = null;  // { lat, lon }
+        let timerInterval = null;
+        let timerSec = 60;
+        const CIRCUMFERENCE = 195; // 2 * Math.PI * 31
+
+        // ══════════════════════════════════════════════
+        //  GEOLOCATION – request silently on page load
+        // ══════════════════════════════════════════════
+        window.addEventListener('load', () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    pos => { donorCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude }; },
+                    () => { donorCoords = null; }
+                );
+            }
+        });
+
+        // ══════════════════════════════════════════════
+        //  PHASE 1 → 2
+        // ══════════════════════════════════════════════
+        function goToPhase2() {
+            const phone = document.getElementById('phone').value.trim();
+            const address = document.getElementById('address').value.trim();
+            const err = document.getElementById('p1err');
+            err.style.display = 'none';
+            if (!phone || phone.length < 7) { err.textContent = 'Please enter a valid phone number.'; err.style.display = 'block'; return; }
+            if (!address) { err.textContent = 'Please enter a pickup address.'; err.style.display = 'block'; return; }
+            show('phase2');
+        }
+        function backToPhase1() { show('phase1'); }
+
+        function show(id) {
+            ['phase1', 'phase2', 'successView', 'fallbackView'].forEach(x => document.getElementById(x).style.display = x === id ? 'block' : 'none');
+        }
+
+        // ══════════════════════════════════════════════
+        //  SUBMIT DONATION
+        // ══════════════════════════════════════════════
+        async function submitQuickDonation() {
+            const foodItem = document.getElementById('foodItem').value.trim();
+            const foodType = document.getElementById('foodType').value;
+            const quantity = document.getElementById('quantity').value.trim();
+            const expiryTime = document.getElementById('expiryTime').value.trim();
+            const err = document.getElementById('p2err');
+            err.style.display = 'none';
+
+            if (!foodItem) { err.textContent = 'Please enter what food you are donating.'; err.style.display = 'block'; return; }
+            if (!foodType) { err.textContent = 'Please select a food type.'; err.style.display = 'block'; return; }
+            if (!quantity) { err.textContent = 'Please enter approximate quantity.'; err.style.display = 'block'; return; }
+
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Submitting…';
+
+            const payload = {
+                donorType: 'quick_donor',
+                phone: document.getElementById('phone').value.trim(),
+                address: document.getElementById('address').value.trim(),
+                donorName: document.getElementById('donorName').value.trim() || 'Anonymous',
+                foodItem, type: foodType, quantity, expiryTime,
+                status: 'Pending AI Match',
+                lat: donorCoords?.lat || null,
+                lon: donorCoords?.lon || null,
+                createdAt: new Date().toISOString()
+            };
+
+            try {
+                const res = await fetch('http://localhost:5000/quick-donate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                if (data.success) {
+                    document.getElementById('successPhone').textContent = payload.phone;
+                    show('successView');
+                    startNGOTimer();
+                } else {
+                    err.textContent = data.message || 'Submission failed.'; err.style.display = 'block';
+                    btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Donation';
+                }
+            } catch {
+                err.textContent = 'Could not reach server. Is the backend running?'; err.style.display = 'block';
+                btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Submit Donation';
+            }
+        }
+
+        // ══════════════════════════════════════════════
+        //  NGO WAITING COUNTDOWN TIMER
+        // ══════════════════════════════════════════════
+        const msgs = [
+            '🔍 Pinging 5 NGOs nearby…',
+            '📡 Broadcasting to volunteers…',
+            '🤖 AI matching donors to NGOs…',
+            '⏳ Waiting for NGO confirmation…',
+            '🔔 Sending push alerts to partners…',
+        ];
+        function startNGOTimer() {
+            timerSec = 60;
+            const arc = document.getElementById('timerArc');
+            const count = document.getElementById('timerCount');
+            const msg = document.getElementById('ngoMsg');
+            arc.style.strokeDashoffset = '0';
+
+            timerInterval = setInterval(() => {
+                timerSec--;
+                count.textContent = timerSec;
+                const offset = CIRCUMFERENCE * (1 - timerSec / 60);
+                arc.style.strokeDashoffset = offset;
+                msg.textContent = msgs[Math.floor((60 - timerSec) / 12)] || msgs[4];
+                if (timerSec <= 0) { clearInterval(timerInterval); triggerFallback(); }
+            }, 1000);
+        }
+
+        // ══════════════════════════════════════════════
+        //  FALLBACK: SHOW SMART SUGGESTIONS
+        // ══════════════════════════════════════════════
+        async function triggerFallback() {
+            clearInterval(timerInterval);
+            show('fallbackView');
+            await loadSmartSuggestions();
+        }
+
+        // ── Icon + colour by place type ──────────────
+        const TYPE_META = {
+            railway_station: { icon: '🚆', cls: 'train', label: 'Railway Station' },
+            train_station: { icon: '🚆', cls: 'train', label: 'Train Station' },
+            bus_station: { icon: '🚌', cls: 'bus', label: 'Bus Station' },
+            bus_stop: { icon: '🚌', cls: 'bus', label: 'Bus Stop' },
+            place_of_worship: { icon: '🛕', cls: 'temple', label: 'Temple / Mosque' },
+            shelter: { icon: '🏚️', cls: 'shelter', label: 'Shelter' },
+            food_bank: { icon: '🥗', cls: 'food', label: 'Food Bank' },
+            park: { icon: '🌳', cls: 'park', label: 'Public Park' },
+            community_centre: { icon: '🏛️', cls: 'shelter', label: 'Community Centre' },
+        };
+
+        async function loadSmartSuggestions() {
+            const list = document.getElementById('suggestionsList');
+
+            if (!donorCoords) {
+                list.innerHTML = `<div class="no-location-warning">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            <strong> Location access was denied.</strong><br>
+            Please enable location permission and refresh to see nearby drop-off points, or search manually on
+            <a href="https://www.google.com/maps/search/food+bank+OR+railway+station+OR+temple" target="_blank" style="color:#f87171">Google Maps</a>.
+        </div>`;
+                return;
+            }
+
+            const { lat, lon } = donorCoords;
+
+            // Overpass API query — free, no API key needed
+            const query = `
+[out:json][timeout:20];
+(
+  node["amenity"="place_of_worship"](around:4000,${lat},${lon});
+  node["amenity"="shelter"](around:4000,${lat},${lon});
+  node["amenity"="food_bank"](around:4000,${lat},${lon});
+  node["amenity"="community_centre"](around:3000,${lat},${lon});
+  node["railway"="station"](around:5000,${lat},${lon});
+  node["public_transport"="station"](around:5000,${lat},${lon});
+  node["amenity"="bus_station"](around:4000,${lat},${lon});
+);
+out body 15;`;
+
+            try {
+                const res = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', body: query });
+                const data = await res.json();
+
+                // Compute distance, sort, take top 5
+                const places = (data.elements || [])
+                    .filter(e => e.lat && e.lon)
+                    .map(e => {
+                        const dist = haversine(lat, lon, e.lat, e.lon);
+                        const tag = e.tags || {};
+                        const type = tag.railway === 'station' ? 'railway_station'
+                            : tag.public_transport === 'station' ? 'train_station'
+                                : tag.amenity || 'shelter';
+                        const name = tag.name || tag['name:en'] || TYPE_META[type]?.label || 'Nearby Location';
+                        return { name, type, dist, lat: e.lat, lon: e.lon };
+                    })
+                    .filter(p => p.dist < 5000)
+                    .sort((a, b) => a.dist - b.dist)
+                    .slice(0, 5);
+
+                if (places.length === 0) {
+                    // Fallback: generate Google Maps links for common nearby searches
+                    renderFallbackSearchLinks(lat, lon);
+                    return;
+                }
+                renderPlaces(places, lat, lon);
+            } catch {
+                // Network error — offer generic Google Maps search
+                renderFallbackSearchLinks(donorCoords.lat, donorCoords.lon);
+            }
+        }
+
+        function renderPlaces(places, myLat, myLon) {
+            const list = document.getElementById('suggestionsList');
+            list.innerHTML = places.map(p => {
+                const meta = TYPE_META[p.type] || { icon: '📍', cls: 'shelter', label: 'Location' };
+                const distText = p.dist < 1000 ? `${Math.round(p.dist)} m` : `${(p.dist / 1000).toFixed(1)} km`;
+                const minsEst = Math.round(p.dist / 80); // ~80m per min walking
+                const mapsUrl = `https://www.google.com/maps/dir/?api=1&origin=${myLat},${myLon}&destination=${p.lat},${p.lon}&travelmode=driving`;
+                return `
+        <div class="location-card">
+            <div class="loc-icon ${meta.cls}">${meta.icon}</div>
+            <div class="loc-info">
+                <div class="loc-name">${escHtml(p.name)}</div>
+                <div class="loc-meta">
+                    <span><i class="fa-solid fa-route"></i> ${distText}</span>
+                    <span><i class="fa-regular fa-clock"></i> ~${minsEst} min walk</span>
+                    <span style="color:rgba(74,222,128,.7)">${meta.label}</span>
+                </div>
+            </div>
+            <a class="btn-nav" href="${mapsUrl}" target="_blank">
+                <i class="fa-solid fa-diamond-turn-right"></i> Navigate
+            </a>
+        </div>`;
+            }).join('');
+        }
+
+        function renderFallbackSearchLinks(lat, lon) {
+            const list = document.getElementById('suggestionsList');
+            const searches = [
+                { label: 'Railway Stations nearby', icon: '🚆', q: 'railway+station' },
+                { label: 'Bus Stands nearby', icon: '🚌', q: 'bus+station' },
+                { label: 'Temples / Places of Worship', icon: '🛕', q: 'temple+OR+mosque' },
+                { label: 'Food Banks / Shelters', icon: '🥗', q: 'food+bank+OR+shelter' },
+                { label: 'Community Centres', icon: '🏛️', q: 'community+centre' },
+            ];
+            list.innerHTML = `<p style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:12px">
+        <i class="fa-solid fa-triangle-exclamation" style="color:#fbbf24"></i>
+        Detailed location fetch unavailable. Click below to search on Google Maps:
+    </p>` + searches.map(s => `
+        <div class="location-card">
+            <div class="loc-icon shelter" style="font-size:22px">${s.icon}</div>
+            <div class="loc-info"><div class="loc-name">${s.label}</div><div class="loc-meta"><span>Near your location</span></div></div>
+            <a class="btn-nav" href="https://www.google.com/maps/search/${s.q}/@${lat},${lon},14z" target="_blank">
+                <i class="fa-solid fa-diamond-turn-right"></i> Open Maps
+            </a>
+        </div>`).join('');
+        }
+
+        // ── Helpers ──────────────────────────────────
+        function haversine(lat1, lon1, lat2, lon2) {
+            const R = 6371000, φ1 = lat1 * Math.PI / 180, φ2 = lat2 * Math.PI / 180;
+            const Δφ = (lat2 - lat1) * Math.PI / 180, Δλ = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+        function escHtml(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+    </script>
+</body>
+
+</html>
