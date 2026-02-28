@@ -1,93 +1,138 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // Sidebar Toggle Logic for Mobile
+    // ── Sidebar Toggle ───────────────────────────────────────
     const sidebar = document.getElementById('sidebar');
     const menuTriggerBtn = document.getElementById('menuTriggerBtn');
     const closeSidebarBtn = document.getElementById('closeSidebarBtn');
 
     if (menuTriggerBtn && sidebar && closeSidebarBtn) {
-        menuTriggerBtn.addEventListener('click', () => {
-            sidebar.classList.add('open');
-        });
-
-        closeSidebarBtn.addEventListener('click', () => {
-            sidebar.classList.remove('open');
-        });
-
-        // Close sidebar if clicking outside on mobile
+        menuTriggerBtn.addEventListener('click', () => sidebar.classList.add('open'));
+        closeSidebarBtn.addEventListener('click', () => sidebar.classList.remove('open'));
         document.addEventListener('click', (e) => {
-            if (window.innerWidth <= 768) {
-                if (!sidebar.contains(e.target) && !menuTriggerBtn.contains(e.target) && sidebar.classList.contains('open')) {
-                    sidebar.classList.remove('open');
-                }
+            if (window.innerWidth <= 768 &&
+                !sidebar.contains(e.target) &&
+                !menuTriggerBtn.contains(e.target) &&
+                sidebar.classList.contains('open')) {
+                sidebar.classList.remove('open');
             }
         });
     }
 
-    // Fetch and Output Dynamic Data
+    // ── Config ───────────────────────────────────────────────
+    const API = 'http://localhost:5000';
     const tableBody = document.getElementById('pickupsTableBody');
-    let donationsCache = {}; // keep map of items for easy lookup
 
+    // Get auth token if NGO is logged in (optional – PATCH route requires it)
+    const authToken = localStorage.getItem('token') || '';
+
+    // ── Load Donations from Backend ──────────────────────────
     async function loadDonations() {
         try {
-            const response = await fetch('http://localhost:5000/donations');
-            if (!response.ok) throw new Error('API Error');
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;">
+                <i class="fa-solid fa-circle-notch fa-spin" style="color:#2ecc71;font-size:1.5rem;"></i>
+                <br><span style="color:#7f8c8d;margin-top:8px;display:block;">Loading donations...</span>
+            </td></tr>`;
 
-            const data = await response.json();
-            donationsCache = data;
-            renderTable(data);
-        } catch (error) {
-            console.error("Failed to load donations:", error);
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem;">Error mapping donations off backend backend. Ensure Node server is running on port 5000.</td></tr>`;
+            const res = await fetch(`${API}/donations`);
+            if (!res.ok) throw new Error('API Error: ' + res.status);
+
+            const data = await res.json();
+
+            // Server returns { success: true, donations: [...] }
+            const donations = data.donations || [];
+            renderTable(donations);
+
+        } catch (err) {
+            console.error('Failed to load donations:', err);
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#e74c3c;">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                Could not reach the backend. Make sure the Node server is running on port 5000.
+            </td></tr>`;
         }
     }
 
+    // ── Render Table ─────────────────────────────────────────
     function renderTable(donations) {
-        tableBody.innerHTML = ''; // clear
+        tableBody.innerHTML = '';
 
-        if (!donations || Object.keys(donations).length === 0) {
-            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 2rem;">No donations found in database.</td></tr>`;
+        if (!Array.isArray(donations) || donations.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2.5rem;color:#7f8c8d;">
+                <i class="fa-solid fa-inbox" style="font-size:2rem;margin-bottom:10px;display:block;color:#bdc3c7;"></i>
+                No donations found in the database yet.
+            </td></tr>`;
+            updateMetrics(0, 0, 0);
             return;
         }
 
-        // Convert object to array and sort by latest
-        const items = Object.entries(donations).map(([id, val]) => ({ id, ...val })).reverse();
-
         let pendingCount = 0;
+        let acceptedCount = 0;
+        let deliveredCount = 0;
 
-        items.forEach(item => {
-            // Pick an icon based on type
-            let iconClass = "fa-utensils";
-            if (item.type === "Prepared Food") iconClass = "fa-burger";
-            if (item.type === "Raw Ingredients") iconClass = "fa-carrot";
-            if (item.type === "Baked Goods") iconClass = "fa-bread-slice";
-            if (item.type === "Packaged Items") iconClass = "fa-box";
+        // Sort: newest first (by createdAt if available)
+        const sorted = [...donations].sort((a, b) =>
+            new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+        );
 
-            // Format time
-            const formattedTime = item.expiryTime ? formatTime(item.expiryTime) : 'N/A';
+        sorted.forEach(item => {
+            // Resolve the real ID (Mongoose _id or id)
+            const itemId = item._id || item.id;
 
-            // Determine badge and buttons based on status
-            let statusMarkup = '';
-            let actionMarkup = '';
+            // Food type icon
+            let iconClass = 'fa-utensils';
+            if (item.type === 'Prepared Food' || item.type === 'Cooked Meal') iconClass = 'fa-burger';
+            if (item.type === 'Raw Ingredients' || item.type === 'Raw Vegetables') iconClass = 'fa-carrot';
+            if (item.type === 'Baked Goods' || item.type === 'Bread & Bakery') iconClass = 'fa-bread-slice';
+            if (item.type === 'Packaged Food' || item.type === 'Packaged Items') iconClass = 'fa-box';
+            if (item.type === 'Fruits') iconClass = 'fa-apple-whole';
+            if (item.type === 'Dairy') iconClass = 'fa-jar';
+
+            // Format expiry/pickup window
+            const pickupWindow = item.expiryTime
+                ? `Before ${item.expiryTime}`
+                : item.session
+                    ? item.session + ' window'
+                    : 'ASAP';
+
+            // Donor display
+            const donorLabel = item.donorName || (item.donorType === 'quick_donor' ? 'Quick Donor' : `Donor #${String(itemId).slice(-4)}`);
+            const donorSub = item.address || item.phone || '';
 
             const currentStatus = item.status || 'Pending AI Match';
+
+            let statusMarkup = '';
+            let actionMarkup = '';
 
             if (currentStatus === 'Pending AI Match') {
                 pendingCount++;
                 statusMarkup = `<span class="status badge-matched">Available (AI Matched)</span>`;
-                actionMarkup = `<button class="btn btn-primary btn-sm accept-btn" data-id="${item.id}"><i class="fa-solid fa-check"></i> Accept</button>`;
+                actionMarkup = `
+                    <button class="btn btn-primary btn-sm accept-btn" data-id="${itemId}">
+                        <i class="fa-solid fa-check"></i> Accept Pickup
+                    </button>`;
             } else if (currentStatus === 'Accepted') {
+                acceptedCount++;
                 statusMarkup = `<span class="status badge-transit">Ready for Pickup</span>`;
-                actionMarkup = `<button class="btn btn-outline btn-sm update-status-btn" data-id="${item.id}">Update Status</button>`;
+                actionMarkup = `
+                    <button class="btn btn-outline btn-sm update-status-btn" data-id="${itemId}">
+                        <i class="fa-solid fa-truck-fast"></i> Update Status
+                    </button>`;
             } else if (currentStatus === 'In Transit') {
+                acceptedCount++;
                 statusMarkup = `<span class="status badge-transit">Volunteer En Route</span>`;
-                actionMarkup = `<button class="btn btn-outline btn-sm update-status-btn" data-id="${item.id}">Update Status</button>`;
+                actionMarkup = `
+                    <button class="btn btn-outline btn-sm update-status-btn" data-id="${itemId}">
+                        <i class="fa-solid fa-location-dot"></i> Update Status
+                    </button>`;
             } else if (currentStatus === 'Delivered') {
-                statusMarkup = `<span class="status badge-completed">Delivered</span>`;
-                actionMarkup = `<button class="btn-icon" title="View Details"><i class="fa-solid fa-eye"></i></button>`;
+                deliveredCount++;
+                statusMarkup = `<span class="status badge-completed">Delivered ✓</span>`;
+                actionMarkup = `<span style="color:#7f8c8d;font-size:0.82rem;">Completed</span>`;
             } else {
-                 statusMarkup = `<span class="status badge-pending">${currentStatus}</span>`;
-                 actionMarkup = `<button class="btn btn-outline btn-sm update-status-btn" data-id="${item.id}">Update Status</button>`;
+                statusMarkup = `<span class="status badge-pending">${currentStatus}</span>`;
+                actionMarkup = `
+                    <button class="btn btn-outline btn-sm update-status-btn" data-id="${itemId}">
+                        Update Status
+                    </button>`;
             }
 
             const tr = document.createElement('tr');
@@ -96,79 +141,64 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="item-info">
                         <div class="item-icon"><i class="fa-solid ${iconClass}"></i></div>
                         <div>
-                            <h4>Donor ID: ${item.id.slice(-4)}</h4>
+                            <h4>${donorLabel}</h4>
+                            <span class="text-xs text-muted">${donorSub}</span>
                         </div>
                     </div>
                 </td>
                 <td>
                     <span class="text-bold">${item.foodItem || 'Unknown'}</span><br>
-                    <span class="text-xs text-muted">${item.quantity || '?'} items/lbs</span>
+                    <span class="text-xs text-muted">${item.quantity || '?'} &bull; ${item.type || 'Food'}</span>
                 </td>
-                <td>Today, Before ${formattedTime}</td>
+                <td>${pickupWindow}</td>
                 <td>${statusMarkup}</td>
                 <td>${actionMarkup}</td>
             `;
-
             tableBody.appendChild(tr);
         });
 
-        const nearbyCountEl = document.getElementById('nearbyDonationsCount');
-        if (nearbyCountEl) {
-            nearbyCountEl.textContent = pendingCount;
-        }
+        // Update metric cards
+        updateMetrics(pendingCount, acceptedCount, deliveredCount);
 
+        // Dynamic map pins for pending donations
         const mapPinsEl = document.getElementById('dynamicMapPins');
         if (mapPinsEl) {
-            mapPinsEl.innerHTML = ''; // clear
-            
-            // Randomly scatter pins for each pending donation on the visual map
-            for (let i = 0; i < pendingCount; i++) {
-                const topP = 20 + Math.random() * 50; 
-                const leftP = 20 + Math.random() * 50; 
+            mapPinsEl.innerHTML = '';
+            for (let i = 0; i < Math.min(pendingCount, 6); i++) {
+                const top = 20 + Math.random() * 50;
+                const left = 20 + Math.random() * 55;
                 const activeClass = i === 0 ? 'active-pin' : '';
-                mapPinsEl.innerHTML += `<div class="pin ${activeClass}" style="top: ${topP}%; left: ${leftP}%;"><i class="fa-solid fa-location-dot"></i></div>`;
+                mapPinsEl.innerHTML += `<div class="pin ${activeClass}" style="top:${top}%;left:${left}%;">
+                    <i class="fa-solid fa-location-dot"></i>
+                </div>`;
             }
         }
 
         attachEventListeners();
     }
 
-    // Helper: Format 24h time to 12h AM/PM
-    function formatTime(time24) {
-        if (!time24) return '';
-        const [hour, minute] = time24.split(':');
-        let h = parseInt(hour, 10);
-        const ampm = h >= 12 ? 'PM' : 'AM';
-        h = h % 12;
-        h = h ? h : 12;
-        return `${h}:${minute} ${ampm}`;
+    // ── Metric Cards ─────────────────────────────────────────
+    function updateMetrics(pending, active, delivered) {
+        const nearbyEl = document.getElementById('nearbyDonationsCount');
+        if (nearbyEl) nearbyEl.textContent = pending;
+
+        // "Active Pickups" card (3rd metric card)
+        const allH3 = document.querySelectorAll('.metric-data h3');
+        if (allH3[2]) allH3[2].textContent = active;
+        // "Families Served" based on delivered
+        if (allH3[3]) allH3[3].textContent = (150 + delivered * 5) + '+';
     }
 
-    // Modal UI Logic
-    const statusModal = document.getElementById('statusModal');
-    const closeStatusModalBtn = document.getElementById('closeStatusModalBtn');
-    const saveStatusBtn = document.getElementById('saveStatusBtn');
-    const toast = document.getElementById('toast');
-
-    const issueNotes = document.getElementById('issueNotes');
-    const statusRadios = document.querySelectorAll('input[name="deliveryStatus"]');
-
-    let currentUpdateId = null;
-
+    // ── Event Listeners ──────────────────────────────────────
     function attachEventListeners() {
-        const acceptBtns = document.querySelectorAll('.accept-btn');
-         const updateBtns = document.querySelectorAll('.update-status-btn');
-
-        // Handle "Accept" Donation logic
-        acceptBtns.forEach(btn => {
+        document.querySelectorAll('.accept-btn').forEach(btn => {
             btn.addEventListener('click', async (e) => {
                 const id = e.target.closest('button').dataset.id;
                 await updateStatusAPI(id, 'Accepted', e.target.closest('button'));
             });
         });
 
-        // Bind existing "Update Status" buttons
-        updateBtns.forEach(btn => {
+        document.querySelectorAll('.update-status-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const id = e.target.closest('button').dataset.id;
                 openStatusModal(id);
@@ -176,112 +206,178 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Backend API Call for Updates
+    // ── PATCH /donations/:id/status ──────────────────────────
     async function updateStatusAPI(id, status, btnElement) {
-         if (btnElement) {
-            btnElement.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Processing...';
+        if (!id) { showToast('Error', 'Missing donation ID.', 'fa-triangle-exclamation'); return; }
+
+        if (btnElement) {
+            btnElement.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Updating...';
             btnElement.disabled = true;
-         }
+        }
 
-         try {
-             const res = await fetch('http://localhost:5000/update-status', {
-                 method: 'POST',
-                 headers: { 'Content-Type': 'application/json' },
-                 body: JSON.stringify({ donationId: id, newStatus: status })
-             });
+        try {
+            const headers = { 'Content-Type': 'application/json' };
+            if (authToken) headers['Authorization'] = 'Bearer ' + authToken;
 
-             if(!res.ok) throw new Error("Update Failed");
+            // ✅ Correct endpoint: PATCH /donations/:id/status
+            const res = await fetch(`${API}/donations/${id}/status`, {
+                method: 'PATCH',
+                headers,
+                body: JSON.stringify({ status }) // ✅ correct field name
+            });
 
-             showToast('Success', `Donation marked as ${status}!`, 'fa-check-circle');
-             
-             // reload data
-             await loadDonations();
-         } catch(e) {
-             console.error(e);
-             alert("Error updating database.");
-         }
+            const data = await res.json();
+
+            if (!res.ok) {
+                // If auth fails (no token), server returns 401
+                if (res.status === 401 || res.status === 403) {
+                    showToast('Auth Required', 'Login as NGO to update statuses.', 'fa-lock');
+                } else {
+                    showToast('Error', data.message || 'Update failed.', 'fa-triangle-exclamation');
+                }
+                // Reload to restore button state
+                await loadDonations();
+                return;
+            }
+
+            showToast('Success! ✓', `Donation marked as "${status}"`, 'fa-check-circle');
+            await loadDonations(); // Refresh table
+
+        } catch (err) {
+            console.error('Update failed:', err);
+            showToast('Error', 'Could not reach server. Check connection.', 'fa-triangle-exclamation');
+            await loadDonations();
+        }
     }
 
-    // Open Modal
+    // ── Status Modal ─────────────────────────────────────────
+    const statusModal = document.getElementById('statusModal');
+    const closeStatusModalBtn = document.getElementById('closeStatusModalBtn');
+    const saveStatusBtn = document.getElementById('saveStatusBtn');
+    const issueNotes = document.getElementById('issueNotes');
+    const statusRadios = document.querySelectorAll('input[name="deliveryStatus"]');
+    let currentUpdateId = null;
+
     function openStatusModal(id) {
         currentUpdateId = id;
         statusModal.classList.add('active');
         document.body.style.overflow = 'hidden';
 
         // Reset form
-        statusRadios[0].checked = true;
-        issueNotes.style.display = 'none';
-        issueNotes.querySelector('textarea').value = '';
+        if (statusRadios[0]) statusRadios[0].checked = true;
+        if (issueNotes) issueNotes.style.display = 'none';
+        const ta = issueNotes && issueNotes.querySelector('textarea');
+        if (ta) ta.value = '';
     }
 
-    // Close Modal
     function closeModal() {
         statusModal.classList.remove('active');
         document.body.style.overflow = '';
         currentUpdateId = null;
     }
 
-    if (closeStatusModalBtn) {
-        closeStatusModalBtn.addEventListener('click', closeModal);
-    }
+    if (closeStatusModalBtn) closeStatusModalBtn.addEventListener('click', closeModal);
 
     statusModal.addEventListener('click', (e) => {
-        if (e.target === statusModal) {
-            closeModal();
-        }
+        if (e.target === statusModal) closeModal();
     });
 
-    // Toggle Issue notes field based on radio selection
+    // Toggle issue notes
     statusRadios.forEach(radio => {
         radio.addEventListener('change', (e) => {
-            if (e.target.value === 'issue') {
-                issueNotes.style.display = 'block';
-            } else {
-                issueNotes.style.display = 'none';
-            }
+            if (issueNotes) issueNotes.style.display = e.target.value === 'issue' ? 'block' : 'none';
         });
     });
 
-    // Handle Save Status Update from Modal
+    // Save from modal
     if (saveStatusBtn) {
         saveStatusBtn.addEventListener('click', async () => {
-            const selectedStatusParam = document.querySelector('input[name="deliveryStatus"]:checked').value;
-            
-            if (!currentUpdateId) return;
+            const selected = document.querySelector('input[name="deliveryStatus"]:checked');
+            if (!selected || !currentUpdateId) return;
 
-            let finalStatus = '';
-            if (selectedStatusParam === 'picked_up') finalStatus = 'In Transit';
-            if (selectedStatusParam === 'delivered') finalStatus = 'Delivered';
-            if (selectedStatusParam === 'issue') finalStatus = 'Issue Reported';
+            const statusMap = {
+                'picked_up': 'In Transit',
+                'delivered': 'Delivered',
+                'issue': 'In Transit'   // keep in pipeline if issue reported
+            };
+            const finalStatus = statusMap[selected.value] || 'In Transit';
 
-            const originalText = saveStatusBtn.textContent;
-            saveStatusBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Updating...';
+            const originalHTML = saveStatusBtn.innerHTML;
+            saveStatusBtn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Saving...';
             saveStatusBtn.disabled = true;
 
             await updateStatusAPI(currentUpdateId, finalStatus, null);
 
-            saveStatusBtn.textContent = originalText;
+            saveStatusBtn.innerHTML = originalHTML;
             saveStatusBtn.disabled = false;
             closeModal();
         });
     }
 
-    // Show Success/Status Toast
+    // "Find Donations" button — just refreshes
+    const findBtn = document.getElementById('findDonationsBtn');
+    if (findBtn) {
+        findBtn.addEventListener('click', () => {
+            showToast('Scanning...', 'Refreshing nearby donations via AI.', 'fa-magnifying-glass-location');
+            loadDonations();
+        });
+    }
+
+    // Filter tabs (client-side filter)
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    let currentFilter = 'all';
+    const filterMap = {
+        'Available Nearby': 'Pending AI Match',
+        'My Pickups': 'active',   // Accepted + In Transit
+        'Completed': 'Delivered'
+    };
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            currentFilter = filterMap[btn.textContent.trim()] || 'all';
+            filterTable(currentFilter);
+        });
+    });
+
+    function filterTable(filter) {
+        const rows = tableBody.querySelectorAll('tr');
+        rows.forEach(row => {
+            const statusCell = row.querySelector('.status');
+            if (!statusCell) return;
+            const text = statusCell.textContent;
+            if (filter === 'all') {
+                row.style.display = '';
+            } else if (filter === 'active') {
+                row.style.display = (text.includes('Pickup') || text.includes('En Route')) ? '' : 'none';
+            } else if (filter === 'Pending AI Match') {
+                row.style.display = text.includes('AI Matched') ? '' : 'none';
+            } else {
+                row.style.display = text.includes('Delivered') ? '' : 'none';
+            }
+        });
+    }
+
+    // ── Toast ────────────────────────────────────────────────
+    const toast = document.getElementById('toast');
+
     function showToast(title, msg, iconClass = 'fa-check') {
         const toastTitle = toast.querySelector('.text-1');
         const toastMsg = toast.querySelector('.text-2');
         const toastIcon = toast.querySelector('i');
 
-        toastTitle.textContent = title;
-        toastMsg.textContent = msg;
-        toastIcon.className = `fa-solid ${iconClass}`;
+        if (toastTitle) toastTitle.textContent = title;
+        if (toastMsg) toastMsg.textContent = msg;
+        if (toastIcon) toastIcon.className = `fa-solid ${iconClass}`;
 
         toast.classList.add('show');
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, 4000);
+        setTimeout(() => toast.classList.remove('show'), 4000);
     }
 
-    // Initial Load
+    // ── Initial load ─────────────────────────────────────────
     loadDonations();
+
+    // Auto-refresh every 30 seconds
+    setInterval(loadDonations, 30000);
 });

@@ -1,171 +1,201 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    // UI Elements
+    // ── UI refs ──────────────────────────────────────────────
     const filterTabs = document.querySelectorAll('.filter-tabs .tab-btn');
     const emptyState = document.getElementById('emptyState');
     const notificationsList = document.getElementById('notificationsList');
     const markAllReadBtn = document.getElementById('markAllReadBtn');
     const unreadCountBadge = document.getElementById('unreadCountBadge');
 
-    let notificationCards = []; // populated dynamically
+    const API = 'http://localhost:5000';
 
-    // 1. Fetch Backend Data
+    // ── Relative timestamp ───────────────────────────────────
+    function timeAgo(dateStr) {
+        if (!dateStr) return 'Just now';
+        const diff = Math.floor((Date.now() - new Date(dateStr)) / 1000); // seconds
+        if (diff < 60) return 'Just now';
+        if (diff < 3600) return Math.floor(diff / 60) + ' min ago';
+        if (diff < 86400) return Math.floor(diff / 3600) + ' hr ago';
+        if (diff < 604800) return Math.floor(diff / 86400) + ' days ago';
+        return new Date(dateStr).toLocaleDateString();
+    }
+
+    // Is this notification "unread"? → submitted within last 2 hours
+    function isRecent(dateStr) {
+        if (!dateStr) return true;
+        return (Date.now() - new Date(dateStr)) < 2 * 3600 * 1000;
+    }
+
+    // ── Fetch all donations from backend ─────────────────────
     async function loadNotifications() {
+        notificationsList.innerHTML = `
+            <div style="text-align:center;padding:2.5rem;color:#7f8c8d;">
+                <i class="fa-solid fa-circle-notch fa-spin" style="font-size:1.8rem;color:#2ecc71;"></i>
+                <p style="margin-top:10px;font-weight:600;">Loading notifications...</p>
+            </div>`;
+
         try {
-            const res = await fetch('http://localhost:5000/donations');
-            if (res.ok) {
-                const data = await res.json();
-                renderNotifications(data);
-            }
-        } catch(e) {
-            console.error("Failed to fetch notifications", e);
+            // ✅ Use the /donations endpoint which returns { success, donations: [...] }
+            const res = await fetch(`${API}/donations`);
+            const data = await res.json();
+
+            // ✅ Correct: data.donations is the array
+            const donations = Array.isArray(data.donations) ? data.donations : [];
+            renderNotifications(donations);
+
+        } catch (err) {
+            console.error('Failed to load notifications:', err);
+            notificationsList.innerHTML = `
+                <div style="text-align:center;padding:2.5rem;color:#e74c3c;">
+                    <i class="fa-solid fa-triangle-exclamation" style="font-size:2rem;margin-bottom:10px;"></i>
+                    <p>Could not reach server. Make sure Node is running on port 5000.</p>
+                </div>`;
         }
     }
 
-    // 2. Render Logic
+    // ── Status → card config ──────────────────────────────────
+    const STATUS_CONFIG = {
+        'Pending AI Match': {
+            icon: 'fa-robot',
+            bg: 'bg-blue',
+            title: 'New Donation — AI Scanning',
+            type: 'matches',
+            body: (item) => `<b>${item.foodItem}</b> (${item.quantity || '?'}) submitted by ${item.donorName || 'Anonymous'}. AI is finding the nearest NGO.`,
+        },
+        'Accepted': {
+            icon: 'fa-handshake-angle',
+            bg: 'bg-orange',
+            title: 'Donation Accepted by NGO ✓',
+            type: 'matches',
+            body: (item) => `An NGO has accepted the <b>${item.foodItem}</b> donation. Pickup will happen soon.`,
+            action: null,
+        },
+        'In Transit': {
+            icon: 'fa-truck-fast',
+            bg: 'bg-orange',
+            title: 'Volunteer En Route 🚐',
+            type: 'deliveries',
+            body: (item) => `A volunteer is transporting <b>${item.foodItem}</b> to the shelter right now.`,
+            action: `<a href="../live-tracking/index.html" class="btn btn-outline btn-sm">Track Live</a>`,
+        },
+        'Delivered': {
+            icon: 'fa-circle-check',
+            bg: 'bg-green',
+            title: 'Food Delivered Successfully 🎉',
+            type: 'deliveries',
+            body: (item) => `<b>${item.foodItem}</b> has been delivered. Thank you for making a difference!`,
+        },
+        'Issue Reported': {
+            icon: 'fa-triangle-exclamation',
+            bg: 'bg-red',
+            title: 'Issue Reported ⚠️',
+            type: 'system',
+            body: (item) => `An issue was reported for the <b>${item.foodItem}</b> pickup. Our team has been notified.`,
+        },
+    };
+
+    // ── Render ────────────────────────────────────────────────
     function renderNotifications(donations) {
-        notificationsList.innerHTML = '';
-        
-        const items = Object.entries(donations || {}).map(([id, val]) => ({id, ...val})).reverse();
+        // Sort newest first
+        const sorted = [...donations].sort((a, b) =>
+            new Date(b.createdAt || b.updatedAt || 0) - new Date(a.createdAt || a.updatedAt || 0)
+        );
 
-        let notifsHTML = '';
-        let validCount = 0;
+        let html = '';
+        let totalCards = 0;
 
-        // Generate dynamic notifications based on donation status
-        items.forEach((item) => {
-            if (item.status === 'Pending AI Match') return; // no notification for just uploading
-            
-            const isUnread = validCount < 2; // fake unread logic for top 2 recent events
-            const unreadClass = isUnread ? 'unread' : '';
-            
-            if (item.status === 'Accepted') {
-                notifsHTML += `
-                    <div class="notification-card ${unreadClass}" data-type="matches">
-                        <div class="notif-icon bg-blue">
-                            <i class="fa-solid fa-handshake-angle"></i>
-                        </div>
-                        <div class="notif-content">
-                            <div class="notif-header">
-                                <h4>New AI Match Found!</h4>
-                                <span class="time">Recent</span>
-                            </div>
-                            <p>An NGO has accepted your '${item.foodItem}' donation.</p>
-                        </div>
-                        ${isUnread ? '<button class="mark-read-indicator" title="Mark as read"></button>' : ''}
+        sorted.forEach(item => {
+            const status = item.status || 'Pending AI Match';
+            const cfg = STATUS_CONFIG[status];
+            if (!cfg) return;
+
+            const timestamp = item.updatedAt || item.createdAt;
+            const unread = isRecent(timestamp);
+            const unreadCls = unread ? 'unread' : '';
+            const timeLabel = timeAgo(timestamp);
+            const bodyText = cfg.body(item);
+            const actionHTML = cfg.action || '';
+            const dotBtn = unread
+                ? `<button class="mark-read-indicator" title="Mark as read"></button>`
+                : '';
+
+            html += `
+                <div class="notification-card ${unreadCls}" data-type="${cfg.type}">
+                    <div class="notif-icon ${cfg.bg}">
+                        <i class="fa-solid ${cfg.icon}"></i>
                     </div>
-                `;
-                validCount++;
-            } else if (item.status === 'In Transit') {
-                notifsHTML += `
-                    <div class="notification-card ${unreadClass}" data-type="deliveries">
-                        <div class="notif-icon bg-orange">
-                            <i class="fa-solid fa-user-check"></i>
+                    <div class="notif-content">
+                        <div class="notif-header">
+                            <h4>${cfg.title}</h4>
+                            <span class="time">${timeLabel}</span>
                         </div>
-                        <div class="notif-content">
-                            <div class="notif-header">
-                                <h4>Volunteer In Transit</h4>
-                                <span class="time">Update</span>
-                            </div>
-                            <p>A volunteer is currently transporting your '${item.foodItem}'.</p>
-                            <div class="notif-actions">
-                                <a href="../live-tracking/index.html" class="btn btn-outline btn-sm">Track Volunteer</a>
-                            </div>
-                        </div>
-                        ${isUnread ? '<button class="mark-read-indicator" title="Mark as read"></button>' : ''}
+                        <p>${bodyText}</p>
+                        ${actionHTML ? `<div class="notif-actions">${actionHTML}</div>` : ''}
                     </div>
-                `;
-                validCount++;
-            } else if (item.status === 'Delivered') {
-                notifsHTML += `
-                    <div class="notification-card ${unreadClass}" data-type="deliveries">
-                        <div class="notif-icon bg-green">
-                            <i class="fa-solid fa-check-circle"></i>
-                        </div>
-                        <div class="notif-content">
-                            <div class="notif-header">
-                                <h4>Delivered Successfully</h4>
-                                <span class="time">Completed</span>
-                            </div>
-                            <p>Your '${item.foodItem}' donation has reached its destination. Thank you!</p>
-                        </div>
-                        ${isUnread ? '<button class="mark-read-indicator" title="Mark as read"></button>' : ''}
-                    </div>
-                `;
-                validCount++;
-            }
+                    ${dotBtn}
+                </div>`;
+            totalCards++;
         });
 
-        // Let's create a welcome notification always at the bottom
-        notifsHTML += `
+        // Always append a system welcome card
+        html += `
             <div class="notification-card" data-type="system">
                 <div class="notif-icon bg-gray">
-                    <i class="fa-solid fa-bell"></i>
+                    <i class="fa-solid fa-leaf"></i>
                 </div>
                 <div class="notif-content">
                     <div class="notif-header">
-                        <h4>Welcome to AI Food Rescue</h4>
+                        <h4>Welcome to Food Rescue AI 🌿</h4>
                         <span class="time">System</span>
                     </div>
-                    <p>Complete your profile to receive better AI matching suggestions for your redistributions.</p>
+                    <p>Every donation you make feeds a family. Complete your profile for smarter AI matching.</p>
                 </div>
-            </div>
-        `;
+            </div>`;
 
-        notificationsList.innerHTML = notifsHTML;
+        notificationsList.innerHTML = html;
 
-        // Re-bind dynamic elements
-        notificationCards = document.querySelectorAll('.notification-card');
-        const markReadIndicators = document.querySelectorAll('.mark-read-indicator');
-        
-        markReadIndicators.forEach(indicator => {
-            indicator.addEventListener('click', (e) => {
+        // Rebind mark-read dots
+        document.querySelectorAll('.mark-read-indicator').forEach(dot => {
+            dot.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const card = e.target.closest('.notification-card');
-                card.style.transition = 'all 0.3s ease';
                 card.classList.remove('unread');
-                indicator.remove(); // hide the blue dot
+                dot.remove();
                 updateUnreadBadge();
+                // Re-run current filter
+                const activeTab = document.querySelector('.tab-btn.active');
+                if (activeTab) applyFilter(activeTab.getAttribute('data-filter'));
             });
         });
 
         updateUnreadBadge();
-        applyFilter(document.querySelector('.tab-btn.active').getAttribute('data-filter'));
+        const activeTab = document.querySelector('.tab-btn.active');
+        applyFilter(activeTab ? activeTab.getAttribute('data-filter') : 'all');
     }
 
-    // 3. Filtering logic
+    // ── Filter ────────────────────────────────────────────────
     function applyFilter(filterValue) {
+        const cards = document.querySelectorAll('.notification-card');
         let visibleCount = 0;
 
-        notificationCards.forEach(card => {
+        cards.forEach(card => {
             const type = card.getAttribute('data-type');
-            const isUnread = card.classList.contains('unread');
+            const unread = card.classList.contains('unread');
 
-            let shouldShow = false;
+            const show = filterValue === 'all'
+                || (filterValue === 'unread' && unread)
+                || (filterValue === type);
 
-            if (filterValue === 'all') {
-                shouldShow = true;
-            } else if (filterValue === 'unread' && isUnread) {
-                shouldShow = true;
-            } else if (filterValue === type) {
-                shouldShow = true;
-            }
-
-            if (shouldShow) {
-                card.style.display = 'flex';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
+            card.style.display = show ? 'flex' : 'none';
+            if (show) visibleCount++;
         });
 
         if (visibleCount === 0) {
             emptyState.style.display = 'block';
-            const emptyText = emptyState.querySelector('p');
-            if (filterValue === 'unread') {
-                emptyText.textContent = "You're all caught up! No unread notifications.";
-            } else {
-                emptyText.textContent = "No notifications found for this category.";
-            }
+            const p = emptyState.querySelector('p');
+            if (p) p.textContent = filterValue === 'unread'
+                ? "You're all caught up! No unread notifications."
+                : "No notifications found in this category.";
         } else {
             emptyState.style.display = 'none';
         }
@@ -174,61 +204,44 @@ document.addEventListener('DOMContentLoaded', () => {
     filterTabs.forEach(tab => {
         tab.addEventListener('click', (e) => {
             filterTabs.forEach(t => t.classList.remove('active'));
-            const targetTab = e.currentTarget;
-            targetTab.classList.add('active');
-            applyFilter(targetTab.getAttribute('data-filter'));
+            e.currentTarget.classList.add('active');
+            applyFilter(e.currentTarget.getAttribute('data-filter'));
         });
     });
 
-    // Mark all as read
+    // ── Mark all read ─────────────────────────────────────────
     if (markAllReadBtn) {
         markAllReadBtn.addEventListener('click', () => {
-            const unreadCards = document.querySelectorAll('.notification-card.unread');
-
-            if (unreadCards.length > 0) {
-                // Add a subtle brief pulse animation to the button
-                markAllReadBtn.style.transform = 'scale(1.1)';
-                setTimeout(() => markAllReadBtn.style.transform = 'scale(1)', 200);
-
-                unreadCards.forEach(card => {
-                    card.classList.remove('unread');
-                });
-
-                updateUnreadBadge();
-
-                // If we are currently ON the 'unread' tab, refresh the filter to show empty state
-                const currentActiveTab = document.querySelector('.tab-btn.active');
-                if (currentActiveTab && currentActiveTab.getAttribute('data-filter') === 'unread') {
-                    currentActiveTab.click(); // Trigger click to re-run filter logic
-                }
+            document.querySelectorAll('.notification-card.unread').forEach(card => {
+                card.classList.remove('unread');
+                const dot = card.querySelector('.mark-read-indicator');
+                if (dot) dot.remove();
+            });
+            markAllReadBtn.style.transform = 'scale(1.15)';
+            setTimeout(() => markAllReadBtn.style.transform = 'scale(1)', 200);
+            updateUnreadBadge();
+            const activeTab = document.querySelector('.tab-btn.active');
+            if (activeTab && activeTab.getAttribute('data-filter') === 'unread') {
+                applyFilter('unread');
             }
         });
     }
 
-    // Update unread count badge
+    // ── Unread badge ──────────────────────────────────────────
     function updateUnreadBadge() {
-        if (unreadCountBadge) {
-            const unreadCount = document.querySelectorAll('.notification-card.unread').length;
-
-            if (unreadCount > 0) {
-                unreadCountBadge.textContent = unreadCount;
-                unreadCountBadge.style.display = 'inline-block';
-            } else {
-                unreadCountBadge.style.display = 'none';
-            }
-
-            // Update document title for reality feel
-            if (unreadCount > 0) {
-                document.title = `(${unreadCount}) Notifications - AI Food Rescue`;
-            } else {
-                document.title = `Notifications - AI Food Rescue`;
-            }
-        }
+        if (!unreadCountBadge) return;
+        const count = document.querySelectorAll('.notification-card.unread').length;
+        unreadCountBadge.textContent = count;
+        unreadCountBadge.style.display = count > 0 ? 'inline-block' : 'none';
+        document.title = count > 0
+            ? `(${count}) Notifications — Food Rescue AI`
+            : 'Notifications — Food Rescue AI';
     }
 
-    // Initialize badge on load (for static empty state)
+    // ── Boot ──────────────────────────────────────────────────
     updateUnreadBadge();
-
-    // Load real notifications
     loadNotifications();
+
+    // Auto-refresh every 30s to pick up new donations/status changes
+    setInterval(loadNotifications, 30000);
 });

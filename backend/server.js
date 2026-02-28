@@ -1,49 +1,87 @@
+require("dotenv").config();
 const express = require("express");
-const admin = require("firebase-admin");
+const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const path = require("path");
 
-const serviceAccount = require("./serviceAccountKey.json");
-
-// ── Firebase Init ──────────────────────────────────────────────────
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://foodbridge-dae8f-default-rtdb.firebaseio.com"
-});
-
-const db = admin.database();
-const app = express();
+// ── Config ───────────────────────────────────────────────────────
+const MONGO_URI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/foodrescue";
 const JWT_SECRET = process.env.JWT_SECRET || "foodrescue_secret_key_2026";
+const PORT = process.env.PORT || 5000;
 
-// ── Middleware ─────────────────────────────────────────────────────
+// ── Connect MongoDB (non-fatal if not available) ─────────────────
+mongoose.connect(MONGO_URI, { serverSelectionTimeoutMS: 5000 })
+  .then(() => console.log("🍃 MongoDB connected:", MONGO_URI.replace(/:([^@]+)@/, ':****@')))
+  .catch(err => {
+    console.warn("⚠️  MongoDB not available:", err.message);
+    console.warn("   Serving frontend only — install MongoDB to enable login/register.");
+  });
+
+mongoose.connection.on("error", err => console.error("🍃 DB error:", err.message));
+
+// ── Mongoose Schemas ─────────────────────────────────────────────
+const userSchema = new mongoose.Schema({
+  fullName: { type: String, required: true },
+  email: { type: String, required: true, unique: true, lowercase: true },
+  password: { type: String, required: true },
+  role: { type: String, required: true },
+  licenseNumber: String,
+  ngoId: String,
+}, { timestamps: true });
+
+const donationSchema = new mongoose.Schema({
+  foodItem: { type: String, required: true },
+  type: String,
+  quantity: String,
+  expiryTime: String,
+  status: { type: String, default: "Pending AI Match" },
+  session: String,
+  donorId: { type: mongoose.Schema.Types.Mixed },
+  donorType: { type: String, default: "verified" },
+  donorName: String,
+  phone: String,
+  address: String,
+  lat: Number,
+  lon: Number,
+}, { timestamps: true });
+
+const User = mongoose.model("User", userSchema);
+const Donation = mongoose.model("Donation", donationSchema);
+
+// ── App ──────────────────────────────────────────────────────────
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve web frontend at root (React Native app uses API endpoints directly)
-const path = require("path");
+// Serve entire frontend folder at root
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-
-// ── JWT Auth Middleware ───────────────────────────────────────────
-const authenticateToken = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1]; // Bearer <token>
-  if (!token) return res.status(401).json({ success: false, message: "Access denied. No token provided." });
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (err) {
-    return res.status(403).json({ success: false, message: "Invalid or expired token." });
-  }
+// ── DB guard helper ───────────────────────────────────────────────
+const dbReady = (req, res, next) => {
+  if (mongoose.connection.readyState !== 1)
+    return res.status(503).json({ success: false, message: "Database not connected. Please install MongoDB Community Server and restart." });
+  next();
 };
 
-// ── Time Slot Middleware ──────────────────────────────────────────
+// ── JWT Middleware ────────────────────────────────────────────────
+const authenticateToken = (req, res, next) => {
+  const token = (req.headers["authorization"] || "").split(" ")[1];
+  if (!token) return res.status(401).json({ success: false, message: "Access denied. No token provided." });
+  try { req.user = jwt.verify(token, JWT_SECRET); next(); }
+  catch { return res.status(403).json({ success: false, message: "Invalid or expired token." }); }
+};
+
+const optionalAuth = (req, res, next) => {
+  const token = (req.headers["authorization"] || "").split(" ")[1];
+  if (token) try { req.user = jwt.verify(token, JWT_SECRET); } catch (_) { }
+  next();
+};
+
+// ── Time Slot ────────────────────────────────────────────────────
 const getSessionInfo = () => {
-  const now = new Date();
-  const h = now.getHours();
+  const h = new Date().getHours();
   if (h >= 7 && h < 10) return { allowed: true, session: "Breakfast" };
   if (h >= 12 && h < 14) return { allowed: true, session: "Lunch" };
   if (h >= 19 && h < 22) return { allowed: true, session: "Dinner" };
@@ -52,211 +90,153 @@ const getSessionInfo = () => {
 
 const checkDonationTime = (req, res, next) => {
   const { allowed, session } = getSessionInfo();
-  if (allowed) {
-    req.currentSession = session;
-    next();
-  } else {
-    res.status(403).json({
-      success: false,
-      message: "Food donation is allowed only during Breakfast (7-10 AM), Lunch (12-2 PM), and Dinner (7-10 PM)."
-    });
-  }
+  if (allowed) { req.currentSession = session; next(); }
+  else res.status(403).json({ success: false, message: "Donations allowed only during Breakfast (7-10 AM), Lunch (12-2 PM) or Dinner (7-10 PM)." });
 };
 
-// ══════════════════════════════════════════════════════════════════
-//  PUBLIC ROUTES
-// ══════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════
+//  ROUTES
+// ══════════════════════════════════════════════════════════════
 
 // Health check
-app.get("/health", (req, res) => {
-  res.json({ status: "ok", time: new Date().toISOString() });
-});
+app.get("/health", (req, res) =>
+  res.json({ status: "ok", db: mongoose.connection.readyState === 1 ? "mongodb:connected" : "mongodb:disconnected", time: new Date() }));
 
-// Session status (frontend polls this to enable/disable button)
-app.get("/session-status", (req, res) => {
-  res.json(getSessionInfo());
-});
+app.get("/session-status", (req, res) => res.json(getSessionInfo()));
 
 // Register
-app.post("/register", async (req, res) => {
+app.post("/register", dbReady, async (req, res) => {
   try {
     const { fullName, email, password, role, licenseNumber, ngoId } = req.body;
-
-    if (!email || !password || !role || !fullName) {
-      return res.status(400).json({ success: false, message: "fullName, email, password, and role are required." });
-    }
-    if (password.length < 6) {
+    if (!fullName || !email || !password || !role)
+      return res.status(400).json({ success: false, message: "fullName, email, password and role are required." });
+    if (password.length < 6)
       return res.status(400).json({ success: false, message: "Password must be at least 6 characters." });
-    }
 
-    // Check existing user
-    const existing = await db.ref("users").orderByChild("email").equalTo(email).once("value");
-    if (existing.exists()) {
-      return res.status(409).json({ success: false, message: "An account with this email already exists." });
-    }
+    const exists = await User.findOne({ email: email.toLowerCase() });
+    if (exists) return res.status(409).json({ success: false, message: "An account with this email already exists." });
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUserRef = db.ref("users").push();
-    const userData = {
-      id: newUserRef.key,
-      fullName,
-      email,
-      password: hashedPassword,
-      role,
-      createdAt: new Date().toISOString()
-    };
-    if (licenseNumber) userData.licenseNumber = licenseNumber;
-    if (ngoId) userData.ngoId = ngoId;
-
-    await newUserRef.set(userData);
-
-    const token = jwt.sign({ id: newUserRef.key, email, role }, JWT_SECRET, { expiresIn: "7d" });
+    const hashed = await bcrypt.hash(password, 10);
+    const user = await User.create({ fullName, email, password: hashed, role, licenseNumber, ngoId });
+    const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
 
     res.status(201).json({
-      success: true,
-      message: "Account created successfully.",
-      token,
-      user: { id: newUserRef.key, fullName, email, role }
+      success: true, message: "Account created.", token,
+      user: { id: user._id, fullName: user.fullName, email: user.email, role: user.role }
     });
-  } catch (error) {
-    console.error("Register Error:", error);
-    res.status(500).json({ success: false, message: "Server error. Please try again." });
+  } catch (err) {
+    console.error("Register:", err);
+    res.status(500).json({ success: false, message: "Server error." });
   }
 });
 
 // Login
-app.post("/login", async (req, res) => {
+app.post("/login", dbReady, async (req, res) => {
   try {
     const { email, password } = req.body;
-
-    if (!email || !password) {
+    if (!email || !password)
       return res.status(400).json({ success: false, message: "Email and password are required." });
-    }
 
-    const snapshot = await db.ref("users").orderByChild("email").equalTo(email).once("value");
-    if (!snapshot.exists()) {
-      return res.status(401).json({ success: false, message: "No account found with this email." });
-    }
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) return res.status(401).json({ success: false, message: "No account found with this email." });
 
-    const usersData = snapshot.val();
-    const userId = Object.keys(usersData)[0];
-    const user = usersData[userId];
-
-    // Support both bcrypt hashed (new) and plain-text (legacy) passwords
-    let passwordMatch = false;
-    const isHashed = user.password && user.password.startsWith('$2');
-    if (isHashed) {
-      passwordMatch = await bcrypt.compare(password, user.password);
+    let match = false;
+    if (user.password.startsWith("$2")) {
+      match = await bcrypt.compare(password, user.password);
     } else {
-      // Legacy plain-text comparison
-      passwordMatch = (user.password === password);
-      if (passwordMatch) {
-        // Auto-upgrade to bcrypt for security
-        const upgraded = await bcrypt.hash(password, 10);
-        await db.ref(`users/${userId}`).update({ password: upgraded });
-      }
+      match = (user.password === password);
+      if (match) { user.password = await bcrypt.hash(password, 10); await user.save(); }
     }
-    if (!passwordMatch) {
-      return res.status(401).json({ success: false, message: "Incorrect password." });
-    }
+    if (!match) return res.status(401).json({ success: false, message: "Incorrect password." });
 
-    const token = jwt.sign({ id: userId, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
-
-    res.json({
-      success: true,
-      token,
-      user: { id: userId, fullName: user.fullName, email: user.email, role: user.role }
-    });
-  } catch (error) {
-    console.error("Login Error:", error);
-    res.status(500).json({ success: false, message: "Server error. Please try again." });
+    const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
+    res.json({ success: true, token, user: { id: user._id, fullName: user.fullName, email: user.email, role: user.role } });
+  } catch (err) {
+    console.error("Login:", err);
+    res.status(500).json({ success: false, message: "Server error." });
   }
 });
 
-// ══════════════════════════════════════════════════════════════════
-//  PROTECTED ROUTES (require valid JWT)
-// ══════════════════════════════════════════════════════════════════
+// Quick Donate (public, no account)
+app.post("/quick-donate", dbReady, async (req, res) => {
+  try {
+    const { phone, address, donorName, foodItem, type, quantity, expiryTime, lat, lon } = req.body;
+    if (!phone || !address || !foodItem || !quantity)
+      return res.status(400).json({ success: false, message: "Phone, address, food item and quantity are required." });
 
-// Get all donations — PUBLIC (no auth required so web frontend can load listings)
+    const donation = await Donation.create({
+      donorType: "quick_donor", donorName: donorName || "Anonymous",
+      phone, address, lat, lon,
+      foodItem, type: type || "Others", quantity, expiryTime: expiryTime || "",
+      status: "Pending AI Match",
+    });
+    res.status(201).json({ success: true, message: "Quick donation submitted! NGOs near you have been notified.", id: donation._id });
+  } catch (err) {
+    console.error("Quick Donate:", err);
+    res.status(500).json({ success: false, message: "Server error." });
+  }
+});
+
+// GET donations — public
 app.get("/donations", async (req, res) => {
   try {
-    const snapshot = await db.ref("donations").once("value");
-    const data = snapshot.val() || {};
-    const list = Object.entries(data).map(([id, val]) => ({ id, ...val })).reverse();
-    // Support both { donations: [...] } (mobile) and plain object (web legacy)
-    res.json({ success: true, donations: list, ...data });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.toString() });
+    if (mongoose.connection.readyState !== 1)
+      return res.json({ success: true, donations: [] }); // return empty gracefully
+    const donations = await Donation.find().sort({ createdAt: -1 }).lean();
+    res.json({ success: true, donations: donations.map(d => ({ id: d._id, ...d })) });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// Optional auth middleware — attaches user if token present, but doesn't block if missing
-const optionalAuth = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
-  if (token) {
-    try { req.user = jwt.verify(token, JWT_SECRET); } catch (_) {}
-  }
-  next();
-};
-
-// Add donation (time-gated; auth optional — stores donorId if logged in)
-app.post("/donate", optionalAuth, checkDonationTime, async (req, res) => {
+// POST donate — time-gated, optional auth
+app.post("/donate", dbReady, optionalAuth, checkDonationTime, async (req, res) => {
   try {
-    const data = {
+    const donation = await Donation.create({
       ...req.body,
       session: req.currentSession,
-      donorId: req.user?.id || 'anonymous',
-      createdAt: new Date().toISOString()
-    };
-    const ref = db.ref("donations").push();
-    await ref.set(data);
-    res.status(201).json({ success: true, message: "Donation logged successfully.", id: ref.key });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.toString() });
+      donorId: req.user?.id || "anonymous",
+      donorType: "verified",
+      status: req.body.status || "Pending AI Match",
+    });
+    res.status(201).json({ success: true, message: "Donation logged.", id: donation._id });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// Update donation status
-app.patch("/donations/:id/status", authenticateToken, async (req, res) => {
+// PATCH donation status — auth optional (NGO dashboard can update without login)
+app.patch("/donations/:id/status", optionalAuth, dbReady, async (req, res) => {
   try {
-    const { id } = req.params;
     const { status } = req.body;
-    const validStatuses = ["Pending AI Match", "Accepted", "In Transit", "Delivered"];
-    if (!validStatuses.includes(status)) {
+    const valid = ["Pending AI Match", "Accepted", "In Transit", "Delivered"];
+    if (!valid.includes(status))
       return res.status(400).json({ success: false, message: "Invalid status value." });
-    }
-    await db.ref(`donations/${id}`).update({ status, updatedAt: new Date().toISOString() });
-    res.json({ success: true, message: "Status updated." });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.toString() });
+
+    const donation = await Donation.findByIdAndUpdate(req.params.id, { status }, { new: true });
+    if (!donation) return res.status(404).json({ success: false, message: "Donation not found." });
+    res.json({ success: true, message: "Status updated.", donation });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// Get notifications — PUBLIC
+// GET notifications — public
 app.get("/notifications", async (req, res) => {
   try {
-    const snapshot = await db.ref("donations").once("value");
-    const data = snapshot.val() || {};
-    const all = Object.entries(data).map(([id, val]) => ({ id, ...val })).reverse();
-    // Build notification events from status changes
-    const notifications = all
-      .filter(d => d.status && d.status !== "Pending AI Match")
-      .map(d => ({
-        id: d.id,
-        foodItem: d.foodItem,
-        status: d.status,
-        updatedAt: d.updatedAt || d.createdAt
-      }));
-    res.json({ success: true, notifications });
-  } catch (error) {
-    res.status(500).json({ success: false, message: error.toString() });
+    if (mongoose.connection.readyState !== 1)
+      return res.json({ success: true, notifications: [] });
+    const donations = await Donation.find({ status: { $ne: "Pending AI Match" } })
+      .sort({ updatedAt: -1 }).select("foodItem status updatedAt createdAt").lean();
+    res.json({ success: true, notifications: donations.map(d => ({ id: d._id, foodItem: d.foodItem, status: d.status, updatedAt: d.updatedAt || d.createdAt })) });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
   }
 });
 
-// ── Start ───────────────────────────────────────────────────────
-const PORT = process.env.PORT || 5000;
+// ── Start ────────────────────────────────────────────────────────
 app.listen(PORT, () => {
-  console.log(`🔥 FoodRescue API running on port ${PORT}`);
-  console.log(`📡 Health: http://localhost:${PORT}/health`);
+  console.log(`\n🔥 FoodRescue AI running → http://localhost:${PORT}`);
+  console.log(`📡 Health check         → http://localhost:${PORT}/health`);
+  console.log(`🍃 DB                   → ${MONGO_URI}\n`);
 });

@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Donate — Food Rescue AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --green: #2ecc71;
+            --green-dark: #27ae60;
+            --orange: #f39c12;
+            --amber: #e67e22;
+            --purple: #8e44ad;
+            --blue: #3498db;
+            --text: #2c3e50;
+            --muted: #7f8c8d;
+            --white: #fff;
+            --bg: #f0faf4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Animated background blobs */
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.25;
+            animation: blobFloat 8s ease-in-out infinite;
+        }
+
+        .blob-1 {
+            width: 420px;
+            height: 420px;
+            background: #2ecc71;
+            top: -80px;
+            left: -80px;
+            animation-delay: 0s;
+        }
+
+        .blob-2 {
+            width: 320px;
+            height: 320px;
+            background: #f39c12;
+            bottom: -60px;
+            right: -60px;
+            animation-delay: 3s;
+        }
+
+        .blob-3 {
+            width: 260px;
+            height: 260px;
+            background: #8e44ad;
+            bottom: 30%;
+            left: 10%;
+            animation-delay: 5s;
+        }
+
+        @keyframes blobFloat {
+
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            50% {
+                transform: translate(20px, -20px) scale(1.05);
+            }
+        }
+
+        /* Card */
+        .card {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 28px;
+            padding: 48px 44px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.4);
+            animation: slideUp 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo */
+        .logo-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 32px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .logo-text span {
+            color: #2ecc71;
+        }
+
+        /* Heading */
+        .headline {
+            margin-bottom: 8px;
+            font-size: 2rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1.15;
+        }
+
+        .headline em {
+            font-style: normal;
+            color: #2ecc71;
+        }
+
+        .sub {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.97rem;
+            margin-bottom: 32px;
+        }
+
+        /* Timer badge */
+        .timer-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(46, 204, 113, 0.15);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+            border-radius: 50px;
+            padding: 7px 16px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 28px;
+        }
+
+        .timer-badge i {
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1
+            }
+
+            50% {
+                opacity: 0.4
+            }
+        }
+
+        /* Steps indicator */
+        .steps {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 30px;
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .step-dot.active {
+            background: #2ecc71;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .input-wrap {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 1.05rem;
+            z-index: 2;
+            transition: color 0.3s;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px 16px 16px 48px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            color: #fff;
+            font-size: 1rem;
+            font-family: 'Outfit', sans-serif;
+            outline: none;
+            transition: all 0.3s;
+            caret-color: #2ecc71;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .form-input:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.15);
+        }
+
+        .form-input:focus+.input-icon,
+        .input-wrap:focus-within .input-icon {
+            color: #2ecc71;
+        }
+
+        /* Optional badge */
+        .optional-tag {
+            font-size: 0.75rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.5);
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 6px;
+            font-weight: 500;
+        }
+
+        /* Phone prefix */
+        .phone-prefix {
+            position: absolute;
+            left: 48px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 600;
+            font-size: 0.95rem;
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .phone-input {
+            padding-left: 90px !important;
+        }
+
+        /* Submit btn */
+        .btn-submit {
+            width: 100%;
+            padding: 17px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: #fff;
+            letter-spacing: 0.5px;
+            box-shadow: 0 8px 24px rgba(46, 204, 113, 0.4);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 8px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(46, 204, 113, 0.5);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .btn-submit.loading .spinner {
+            display: block;
+        }
+
+        .btn-submit.loading .btn-text {
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Divider */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 24px 0 20px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .divider span {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.82rem;
+            white-space: nowrap;
+        }
+
+        /* Footer links */
+        .alt-links {
+            text-align: center;
+        }
+
+        .alt-links a {
+            color: rgba(255, 255, 255, 0.55);
+            font-size: 0.88rem;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .alt-links a:hover {
+            color: #2ecc71;
+        }
+
+        .alt-links .sep {
+            color: rgba(255, 255, 255, 0.2);
+            margin: 0 10px;
+        }
+
+        /* Guarantees */
+        .guarantees {
+            display: flex;
+            gap: 16px;
+            margin-top: 28px;
+            padding-top: 22px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .guarantee {
+            flex: 1;
+            text-align: center;
+        }
+
+        .guarantee i {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .g-green i {
+            color: #2ecc71;
+        }
+
+        .g-orange i {
+            color: #f39c12;
+        }
+
+        .g-purple i {
+            color: #9b59b6;
+        }
+
+        .guarantee span {
+            color: rgba(255, 255, 255, 0.45);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Error */
+        .field-error {
+            color: #e74c3c;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            display: none;
+        }
+
+        .form-input.error {
+            border-color: #e74c3c;
+        }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(30, 30, 30, 0.95);
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            backdrop-filter: blur(12px);
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success i {
+            color: #2ecc71;
+        }
+
+        .toast.error i {
+            color: #e74c3c;
+        }
+
+        @media(max-width:520px) {
+            .card {
+                padding: 36px 26px;
+            }
+
+            .headline {
+                font-size: 1.65rem;
+            }
+
+            .guarantees {
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
+    <div class="card">
+        <!-- Logo -->
+        <a href="../index.html" class="logo-row">
+            <div class="logo-icon"><i class="fa-solid fa-leaf"></i></div>
+            <div class="logo-text">Food<span>Rescue</span> AI</div>
+        </a>
+
+        <!-- Timer -->
+        <div class="timer-badge">
+            <i class="fa-solid fa-bolt"></i>
+            Donate in under 30 seconds — No account needed
+        </div>
+
+        <h1 class="headline">Quick <em>Food Donate</em></h1>
+        <p class="sub">For households, individuals &amp; volunteers. Enter 3 details and go!</p>
+
+        <!-- Step dots -->
+        <div class="steps">
+            <div class="step-dot active" id="dot-1"></div>
+            <div class="step-dot" id="dot-2"></div>
+            <div class="step-dot" id="dot-3"></div>
+        </div>
+
+        <form id="quickLoginForm" novalidate>
+            <!-- Phone -->
+            <div class="form-group">
+                <label class="form-label" for="phone">
+                    <i class="fa-solid fa-phone"></i>&nbsp; Phone Number
+                </label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-phone input-icon"></i>
+                    <span class="phone-prefix">+91</span>
+                    <input type="tel" id="phone" class="form-input phone-input" placeholder="98765 43210" maxlength="10"
+                        autocomplete="tel" inputmode="numeric" required>
+                </div>
+                <div class="field-error" id="phone-error">Please enter a valid 10-digit phone number.</div>
+            </div>
+
+            <!-- Address -->
+            <div class="form-group">
+                <label class="form-label" for="address">
+                    <i class="fa-solid fa-location-dot"></i>&nbsp; Pickup Address
+                </label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-location-dot input-icon"></i>
+                    <input type="text" id="address" class="form-input" placeholder="Street, Area, City"
+                        autocomplete="street-address" required>
+                </div>
+                <div class="field-error" id="address-error">Please enter your pickup address.</div>
+            </div>
+
+            <!-- Name (optional) -->
+            <div class="form-group">
+                <label class="form-label" for="name">
+                    <i class="fa-solid fa-user"></i>&nbsp; Your Name
+                    <span class="optional-tag">Optional</span>
+                </label>
+                <div class="input-wrap">
+                    <i class="fa-solid fa-user input-icon"></i>
+                    <input type="text" id="name" class="form-input" placeholder="Anonymous Donor" autocomplete="name">
+                </div>
+            </div>
+
+            <button type="submit" class="btn-submit" id="submitBtn">
+                <span class="btn-text"><i class="fa-solid fa-arrow-right"></i> Continue to Donate Food</span>
+                <div class="spinner"></div>
+            </button>
+        </form>
+
+        <div class="divider"><span>or sign in with full account</span></div>
+        <div class="alt-links">
+            <a href="../login/index.html">Login with Account</a>
+            <span class="sep">|</span>
+            <a href="../register/index.html">Register as Donor / NGO</a>
+        </div>
+
+        <!-- Trust badges -->
+        <div class="guarantees">
+            <div class="guarantee g-green">
+                <i class="fa-solid fa-shield-halved"></i>
+                <span>No account<br>stored</span>
+            </div>
+            <div class="guarantee g-orange">
+                <i class="fa-solid fa-clock"></i>
+                <span>Pickup in<br>&lt; 2 hours</span>
+            </div>
+            <div class="guarantee g-purple">
+                <i class="fa-solid fa-handshake-angle"></i>
+                <span>NGO notified<br>instantly</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast" id="toast">
+        <i class="fa-solid fa-circle-check"></i>
+        <span id="toast-text"></span>
+    </div>
+
+    <script>
+        const form = document.getElementById('quickLoginForm');
+        const phoneEl = document.getElementById('phone');
+        const addressEl = document.getElementById('address');
+        const nameEl = document.getElementById('name');
+        const btn = document.getElementById('submitBtn');
+        const dots = [document.getElementById('dot-1'), document.getElementById('dot-2'), document.getElementById('dot-3')];
+
+        // Animate dots as user fills fields
+        const fields = [phoneEl, addressEl];
+        fields.forEach((f, i) => {
+            f.addEventListener('input', () => {
+                if (f.value.trim()) dots[i + 1].classList.add('active');
+                else dots[i + 1].classList.remove('active');
+            });
+        });
+
+        // Phone — allow digits only
+        phoneEl.addEventListener('input', () => {
+            phoneEl.value = phoneEl.value.replace(/\D/g, '').slice(0, 10);
+        });
+
+        function showError(id, msg) {
+            const el = document.getElementById(id);
+            el.textContent = msg;
+            el.style.display = 'block';
+        }
+        function clearErrors() {
+            document.querySelectorAll('.field-error').forEach(e => e.style.display = 'none');
+            document.querySelectorAll('.form-input').forEach(e => e.classList.remove('error'));
+        }
+
+        function toast(msg, type = 'success') {
+            const t = document.getElementById('toast');
+            const txt = document.getElementById('toast-text');
+            t.className = 'toast ' + type;
+            t.querySelector('i').className = type === 'success'
+                ? 'fa-solid fa-circle-check' : 'fa-solid fa-circle-xmark';
+            txt.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            clearErrors();
+
+            const phone = phoneEl.value.trim();
+            const address = addressEl.value.trim();
+            const name = nameEl.value.trim() || 'Anonymous Donor';
+
+            let valid = true;
+            if (!/^\d{10}$/.test(phone)) {
+                showError('phone-error', 'Please enter a valid 10-digit phone number.');
+                phoneEl.classList.add('error');
+                valid = false;
+            }
+            if (!address) {
+                showError('address-error', 'Please enter your pickup address.');
+                addressEl.classList.add('error');
+                valid = false;
+            }
+            if (!valid) return;
+
+            // Save to sessionStorage and redirect
+            btn.classList.add('loading');
+            sessionStorage.setItem('qd_phone', phone);
+            sessionStorage.setItem('qd_address', address);
+            sessionStorage.setItem('qd_name', name);
+
+            await new Promise(r => setTimeout(r, 800)); // brief loading feel
+            toast('Welcome! Taking you to donate food 🎉');
+            setTimeout(() => {
+                window.location.href = '../quick-donate-dashboard/index.html';
+            }, 900);
+        });
+    </script>
+</body>
+
+</html>

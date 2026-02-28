@@ -1,0 +1,1923 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Donate Dashboard — Food Rescue AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --green: #2ecc71;
+            --green-dark: #27ae60;
+            --green-light: #e8f8f1;
+            --orange: #f39c12;
+            --orange-light: #fef6e4;
+            --amber: #e67e22;
+            --red: #e74c3c;
+            --purple: #9b59b6;
+            --blue: #3498db;
+            --blue-light: #eaf4fb;
+            --teal: #1abc9c;
+            --indigo: #5c6bc0;
+            --text: #2c3e50;
+            --muted: #7f8c8d;
+            --bg: #f0fdf4;
+            --white: #fff;
+            --card-shadow: 0 4px 24px rgba(46, 204, 113, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(160deg, #f0fdf4 0%, #fef9f0 50%, #f0f4ff 100%);
+            min-height: 100vh;
+            color: var(--text);
+        }
+
+        /* ── Topbar ─────────────────────────── */
+        .topbar {
+            background: #fff;
+            border-bottom: 2px solid #f0fdf4;
+            padding: 0 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 64px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 16px rgba(46, 204, 113, 0.07);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .logo-icon {
+            width: 38px;
+            height: 38px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 1rem;
+            box-shadow: 0 3px 10px rgba(46, 204, 113, 0.35);
+        }
+
+        .logo span {
+            color: var(--green);
+        }
+
+        .user-pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--green-light);
+            border-radius: 50px;
+            padding: 7px 16px 7px 10px;
+        }
+
+        .user-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .user-info {
+            line-height: 1.2;
+        }
+
+        .user-name {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .user-role {
+            font-size: 0.72rem;
+            color: var(--green-dark);
+            font-weight: 600;
+        }
+
+        /* ── Main ───────────────────────────── */
+        .main {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 32px 20px 60px;
+        }
+
+        .welcome-banner {
+            background: linear-gradient(135deg, #1a7a4a, #2ecc71, #f39c12);
+            border-radius: 20px;
+            padding: 28px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 28px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(46, 204, 113, 0.3);
+        }
+
+        .welcome-banner::before {
+            content: '';
+            position: absolute;
+            right: -40px;
+            top: -40px;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .welcome-banner::after {
+            content: '';
+            position: absolute;
+            right: 80px;
+            bottom: -60px;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .wb-text h2 {
+            color: #fff;
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .wb-text p {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.95rem;
+        }
+
+        .wb-icon {
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.25);
+            position: relative;
+            z-index: 1;
+        }
+
+        .session-strip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 28px;
+            background: #fff;
+            border-radius: 14px;
+            padding: 14px 20px;
+            border-left: 4px solid var(--green);
+            box-shadow: var(--card-shadow);
+        }
+
+        .session-strip i {
+            color: var(--green);
+            font-size: 1.1rem;
+        }
+
+        .session-strip span {
+            font-size: 0.9rem;
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        .session-badge {
+            margin-left: auto;
+            padding: 4px 14px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .session-badge.open {
+            background: var(--green-light);
+            color: var(--green-dark);
+        }
+
+        .session-badge.closed {
+            background: #fef2f2;
+            color: #c0392b;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media(max-width:700px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 28px;
+            box-shadow: var(--card-shadow);
+            border: 1.5px solid rgba(46, 204, 113, 0.07);
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .card-title i {
+            font-size: 1rem;
+        }
+
+        .ct-green i {
+            color: var(--green);
+        }
+
+        .ct-orange i {
+            color: var(--orange);
+        }
+
+        .ct-blue i {
+            color: var(--blue);
+        }
+
+        .ct-purple i {
+            color: var(--purple);
+        }
+
+        .donor-info-row {
+            display: flex;
+            gap: 14px;
+            flex-direction: column;
+        }
+
+        .info-chip {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 12px 16px;
+        }
+
+        .chip-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
+
+        .ci-green {
+            background: var(--green-light);
+            color: var(--green-dark);
+        }
+
+        .ci-orange {
+            background: var(--orange-light);
+            color: var(--amber);
+        }
+
+        .ci-blue {
+            background: var(--blue-light);
+            color: var(--blue);
+        }
+
+        .chip-text {
+            line-height: 1.3;
+        }
+
+        .chip-label {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .chip-value {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .tip-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .tip-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            font-size: 0.88rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .tip-list i {
+            color: var(--green);
+            margin-top: 3px;
+            font-size: 0.85rem;
+        }
+
+        .form-card {
+            margin-bottom: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .form-label i {
+            color: var(--green);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 13px 16px;
+            border: 1.5px solid #e8f4ef;
+            border-radius: 12px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.97rem;
+            color: var(--text);
+            background: #fafffe;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--green);
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+            background: #fff;
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-select {
+            cursor: pointer;
+        }
+
+        .grid-inline {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        @media(max-width:480px) {
+            .grid-inline {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .pickup-confirmed {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--green-light);
+            border: 1.5px solid rgba(46, 204, 113, 0.2);
+            border-radius: 12px;
+            padding: 13px 16px;
+            font-size: 0.92rem;
+            color: var(--green-dark);
+            font-weight: 600;
+        }
+
+        .pickup-confirmed i {
+            color: var(--green);
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 17px;
+            border: none;
+            border-radius: 14px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            color: #fff;
+            letter-spacing: 0.4px;
+            box-shadow: 0 8px 24px rgba(46, 204, 113, 0.35);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(46, 204, 113, 0.45);
+        }
+
+        .btn-submit.loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .btn-submit.loading .spinner {
+            display: block;
+        }
+
+        .btn-submit.loading .btn-label {
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* ── Success Overlay ─────────────────── */
+        .success-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 2000;
+            background: rgba(10, 40, 20, 0.75);
+            backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .success-overlay.show {
+            display: flex;
+            animation: fadeIn 0.4s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0
+            }
+
+            to {
+                opacity: 1
+            }
+        }
+
+        .success-box {
+            background: #fff;
+            border-radius: 24px;
+            padding: 40px 34px;
+            text-align: center;
+            max-width: 460px;
+            width: 100%;
+            box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3);
+            animation: popUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            overflow: hidden;
+        }
+
+        @keyframes popUp {
+            from {
+                transform: scale(0.8);
+                opacity: 0
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1
+            }
+        }
+
+        .success-icon {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--green), #1abc9c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.2rem;
+            color: #fff;
+            box-shadow: 0 8px 24px rgba(46, 204, 113, 0.4);
+            animation: scaleIn 0.6s 0.2s both;
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0)
+            }
+
+            to {
+                transform: scale(1)
+            }
+        }
+
+        .success-box h2 {
+            font-size: 1.65rem;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .success-box>p {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 8px;
+        }
+
+        .success-id {
+            display: inline-block;
+            background: var(--green-light);
+            color: var(--green-dark);
+            border-radius: 8px;
+            padding: 6px 16px;
+            font-weight: 700;
+            font-size: 0.88rem;
+            margin: 10px 0;
+            letter-spacing: 1px;
+        }
+
+        /* NGO waiting section inside success modal */
+        .ngo-wait-section {
+            background: linear-gradient(135deg, #f0fdf4, #e8f8f1);
+            border: 1.5px solid rgba(46, 204, 113, 0.2);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 18px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ngo-wait-section.timeout {
+            background: linear-gradient(135deg, #fff8f0, #fef3e2);
+            border-color: rgba(243, 156, 18, 0.25);
+        }
+
+        .radar-wrap {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 14px;
+        }
+
+        .radar {
+            width: 56px;
+            height: 56px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .radar-core {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--green);
+            position: absolute;
+            z-index: 2;
+            box-shadow: 0 0 8px rgba(46, 204, 113, 0.5);
+        }
+
+        .radar-ring {
+            position: absolute;
+            border: 2px solid var(--green);
+            border-radius: 50%;
+            animation: radarPulse 2s ease-out infinite;
+        }
+
+        .radar-ring:nth-child(2) {
+            width: 28px;
+            height: 28px;
+            animation-delay: 0s;
+        }
+
+        .radar-ring:nth-child(3) {
+            width: 42px;
+            height: 42px;
+            animation-delay: 0.6s;
+        }
+
+        .radar-ring:nth-child(4) {
+            width: 56px;
+            height: 56px;
+            animation-delay: 1.2s;
+        }
+
+        @keyframes radarPulse {
+            0% {
+                opacity: 1;
+                transform: scale(0.3);
+            }
+
+            100% {
+                opacity: 0;
+                transform: scale(1);
+            }
+        }
+
+        .radar.timeout .radar-core {
+            background: var(--orange);
+        }
+
+        .radar.timeout .radar-ring {
+            border-color: var(--orange);
+        }
+
+        .ngo-status-label {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+
+        .ngo-status-sub {
+            font-size: 0.78rem;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+
+        /* Countdown progress bar */
+        .countdown-bar-wrap {
+            position: relative;
+            height: 8px;
+            background: rgba(46, 204, 113, 0.15);
+            border-radius: 50px;
+            overflow: hidden;
+        }
+
+        .countdown-bar {
+            height: 100%;
+            border-radius: 50px;
+            background: linear-gradient(90deg, var(--green), #1abc9c);
+            width: 100%;
+            transition: width 1s linear;
+            transform-origin: left;
+        }
+
+        .countdown-bar.orange {
+            background: linear-gradient(90deg, var(--orange), var(--amber));
+        }
+
+        .countdown-text {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-top: 6px;
+            font-weight: 600;
+        }
+
+        /* Fallback trigger button */
+        .btn-fallback-trigger {
+            width: 100%;
+            margin-top: 12px;
+            padding: 12px;
+            border: 2px dashed rgba(243, 156, 18, 0.5);
+            border-radius: 12px;
+            background: rgba(243, 156, 18, 0.06);
+            color: var(--amber);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-fallback-trigger:hover {
+            background: rgba(243, 156, 18, 0.12);
+            border-color: var(--orange);
+        }
+
+        .ngo-alert-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #fff;
+            border: 1.5px solid rgba(243, 156, 18, 0.2);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin: 14px 0;
+            text-align: left;
+        }
+
+        .ngo-alert-row i {
+            color: var(--orange);
+            font-size: 1.4rem;
+        }
+
+        .ngo-alert-text strong {
+            font-size: 0.88rem;
+            color: var(--text);
+            display: block;
+        }
+
+        .ngo-alert-text span {
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        .success-actions {
+            display: flex;
+            gap: 10px;
+            flex-direction: column;
+            margin-top: 16px;
+        }
+
+        .btn-again {
+            padding: 13px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--green), var(--green-dark));
+            color: #fff;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-again:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-home {
+            padding: 13px;
+            border: 2px solid #e2f0e8;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            background: transparent;
+            color: var(--text);
+            transition: all 0.3s;
+        }
+
+        .btn-home:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        /* ── Smart Fallback Modal ───────────── */
+        .fallback-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 3000;
+            background: rgba(5, 20, 30, 0.82);
+            backdrop-filter: blur(12px);
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .fallback-overlay.show {
+            display: flex;
+            animation: fadeIn 0.4s;
+        }
+
+        .fallback-panel {
+            background: #fff;
+            border-radius: 28px;
+            width: 100%;
+            max-width: 600px;
+            overflow: hidden;
+            box-shadow: 0 32px 80px rgba(0, 0, 0, 0.35);
+            animation: popUp 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .fallback-header {
+            padding: 28px 28px 0;
+            background: linear-gradient(135deg, #0f1f14, #1a3a24);
+            position: relative;
+            overflow: hidden;
+            pb: 0;
+        }
+
+        .fallback-header::before {
+            content: '';
+            position: absolute;
+            right: -30px;
+            top: -30px;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: rgba(46, 204, 113, 0.1);
+        }
+
+        .fallback-header::after {
+            content: '';
+            position: absolute;
+            left: -20px;
+            bottom: -20px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: rgba(243, 156, 18, 0.08);
+        }
+
+        .fh-inner {
+            position: relative;
+            z-index: 1;
+            padding-bottom: 24px;
+        }
+
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(46, 204, 113, 0.15);
+            border: 1px solid rgba(46, 204, 113, 0.3);
+            color: #2ecc71;
+            padding: 5px 14px;
+            border-radius: 50px;
+            font-size: 0.78rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .ai-badge i {
+            animation: spin 3s linear infinite;
+        }
+
+        .fh-inner h2 {
+            color: #fff;
+            font-size: 1.35rem;
+            margin-bottom: 8px;
+            line-height: 1.3;
+        }
+
+        .fh-inner p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.88rem;
+            line-height: 1.6;
+        }
+
+        /* Warn strip */
+        .no-ngo-strip {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 0 28px;
+            padding: 14px 16px;
+            background: linear-gradient(135deg, #fff4e6, #fef5d4);
+            border: 1.5px solid rgba(243, 156, 18, 0.3);
+            border-radius: 14px;
+            transform: translateY(-14px);
+        }
+
+        .no-ngo-strip i {
+            color: var(--orange);
+            font-size: 1.2rem;
+        }
+
+        .no-ngo-strip-text strong {
+            font-size: 0.88rem;
+            color: var(--text);
+            display: block;
+        }
+
+        .no-ngo-strip-text span {
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        /* Location list */
+        .fallback-body {
+            padding: 4px 28px 28px;
+        }
+
+        .loc-section-title {
+            font-size: 0.78rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            margin: 14px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .loc-section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.06);
+        }
+
+        /* Loading skeleton */
+        .loc-skeleton {
+            display: flex;
+            gap: 14px;
+            align-items: center;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 14px;
+            margin-bottom: 10px;
+        }
+
+        .skel-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(90deg, #e8edf0 25%, #f0f4f8 50%, #e8edf0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        .skel-lines {
+            flex: 1;
+        }
+
+        .skel-line {
+            height: 10px;
+            border-radius: 6px;
+            background: linear-gradient(90deg, #e8edf0 25%, #f0f4f8 50%, #e8edf0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            margin-bottom: 8px;
+        }
+
+        .skel-line.short {
+            width: 60%;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: 200% 0
+            }
+
+            100% {
+                background-position: -200% 0
+            }
+        }
+
+        /* Location card */
+        .loc-card {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 16px;
+            background: #f9fbff;
+            border: 1.5px solid #edf2f7;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            transition: all 0.3s;
+            cursor: default;
+            position: relative;
+        }
+
+        .loc-card:hover {
+            border-color: rgba(46, 204, 113, 0.3);
+            background: #f0fdf4;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(46, 204, 113, 0.1);
+        }
+
+        .loc-rank {
+            position: absolute;
+            top: -6px;
+            left: 12px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--green);
+            color: #fff;
+            font-size: 0.65rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(46, 204, 113, 0.4);
+        }
+
+        .loc-rank.r2 {
+            background: var(--orange);
+        }
+
+        .loc-rank.r3 {
+            background: var(--purple);
+        }
+
+        .loc-rank.r4 {
+            background: var(--blue);
+        }
+
+        .loc-rank.r5 {
+            background: var(--teal);
+        }
+
+        .loc-icon-wrap {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .li-train {
+            background: #e8f4ff;
+            color: #2980b9;
+        }
+
+        .li-bus {
+            background: #fff8e1;
+            color: #f39c12;
+        }
+
+        .li-temple {
+            background: #fce4ec;
+            color: #c0392b;
+        }
+
+        .li-shelter {
+            background: #e8f5e9;
+            color: #27ae60;
+        }
+
+        .li-community {
+            background: #f3e5f5;
+            color: #8e44ad;
+        }
+
+        .li-food {
+            background: #e0f7fa;
+            color: #00838f;
+        }
+
+        .loc-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .loc-name {
+            font-size: 0.92rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .loc-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .loc-dist {
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .loc-dist i {
+            color: var(--green);
+            font-size: 0.65rem;
+        }
+
+        .loc-time {
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .loc-time i {
+            color: var(--blue);
+            font-size: 0.65rem;
+        }
+
+        .loc-type-badge {
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 50px;
+            background: #f0f0f0;
+            color: var(--muted);
+        }
+
+        .btn-navigate {
+            padding: 9px 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4285f4, #1565c0);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-shrink: 0;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(66, 133, 244, 0.3);
+            white-space: nowrap;
+        }
+
+        .btn-navigate:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(66, 133, 244, 0.4);
+        }
+
+        /* Bottom bar */
+        .fallback-footer {
+            padding: 16px 28px 24px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn-maps-search {
+            flex: 1;
+            padding: 13px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #4285f4, #0d47a1);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 14px rgba(66, 133, 244, 0.35);
+        }
+
+        .btn-maps-search:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(66, 133, 244, 0.45);
+        }
+
+        .btn-close-fallback {
+            flex: 1;
+            padding: 13px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 700;
+            background: transparent;
+            color: var(--text);
+            transition: all 0.3s;
+        }
+
+        .btn-close-fallback:hover {
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        /* Error state */
+        .loc-error {
+            text-align: center;
+            padding: 24px 16px;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        .loc-error i {
+            font-size: 2rem;
+            color: #ddd;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        /* ── Confetti ──────────────── */
+        .confetti-piece {
+            position: fixed;
+            border-radius: 2px;
+            animation: confettiFall 2.5s ease-in forwards;
+            pointer-events: none;
+            z-index: 9000;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-40px) rotate(0);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* ── Toast ────────────────── */
+        .toast {
+            position: fixed;
+            bottom: 28px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: rgba(20, 20, 20, 0.95);
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.93rem;
+            backdrop-filter: blur(12px);
+            transition: transform 0.4s;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast.success i {
+            color: var(--green);
+        }
+
+        .toast.error i {
+            color: #e74c3c;
+        }
+
+        .toast.info i {
+            color: var(--blue);
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Topbar -->
+    <div class="topbar">
+        <a href="../index.html" class="logo">
+            <div class="logo-icon"><i class="fa-solid fa-leaf"></i></div>
+            Food<span>Rescue</span> AI
+        </a>
+        <div class="user-pill">
+            <div class="user-avatar" id="avatarInitial">?</div>
+            <div class="user-info">
+                <div class="user-name" id="topbarName">Quick Donor</div>
+                <div class="user-role">⚡ Temporary Donor</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main">
+        <!-- Welcome Banner -->
+        <div class="welcome-banner">
+            <div class="wb-text">
+                <h2>Welcome, <span id="bannerName">Friend</span>! 👋</h2>
+                <p>You're doing something amazing. Let's get your food to someone who needs it.</p>
+            </div>
+            <div class="wb-icon"><i class="fa-solid fa-hand-holding-heart"></i></div>
+        </div>
+
+        <!-- Session Status -->
+        <div class="session-strip">
+            <i class="fa-solid fa-clock"></i>
+            <span id="sessionMsg">Checking donation window...</span>
+            <span class="session-badge" id="sessionBadge">...</span>
+        </div>
+
+        <div class="grid-2">
+            <!-- Donor Info -->
+            <div class="card">
+                <div class="card-title ct-green"><i class="fa-solid fa-id-card"></i> Your Quick Profile</div>
+                <div class="donor-info-row">
+                    <div class="info-chip">
+                        <div class="chip-icon ci-green"><i class="fa-solid fa-user"></i></div>
+                        <div class="chip-text">
+                            <div class="chip-label">Donor Name</div>
+                            <div class="chip-value" id="profileName">—</div>
+                        </div>
+                    </div>
+                    <div class="info-chip">
+                        <div class="chip-icon ci-orange"><i class="fa-solid fa-phone"></i></div>
+                        <div class="chip-text">
+                            <div class="chip-label">Phone</div>
+                            <div class="chip-value" id="profilePhone">—</div>
+                        </div>
+                    </div>
+                    <div class="info-chip">
+                        <div class="chip-icon ci-blue"><i class="fa-solid fa-location-dot"></i></div>
+                        <div class="chip-text">
+                            <div class="chip-label">Pickup Address</div>
+                            <div class="chip-value" id="profileAddress">—</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="card">
+                <div class="card-title ct-orange"><i class="fa-solid fa-lightbulb"></i> Quick Tips</div>
+                <ul class="tip-list">
+                    <li><i class="fa-solid fa-check"></i> Only donate food that is safe to eat and freshly cooked.</li>
+                    <li><i class="fa-solid fa-check"></i> Pack food in clean, sealed containers if possible.</li>
+                    <li><i class="fa-solid fa-check"></i> Mention quantity accurately so the right NGO is alerted.</li>
+                    <li><i class="fa-solid fa-check"></i> NGO volunteers usually arrive within 1–2 hours.</li>
+                    <li><i class="fa-solid fa-check"></i> If no NGO is available, our AI suggests nearby drop points.
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Donation Form -->
+        <div class="card form-card">
+            <div class="card-title ct-green"><i class="fa-solid fa-utensils"></i> Donate Food Now</div>
+            <form id="donateForm" novalidate>
+                <div class="grid-inline">
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-bowl-food"></i> Food Item Name *</label>
+                        <input type="text" class="form-input" id="foodItem" placeholder="e.g., Rice &amp; Dal" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-tags"></i> Food Type *</label>
+                        <select class="form-select" id="foodType" required>
+                            <option value="">Select type...</option>
+                            <option value="Cooked Meal">🍛 Cooked Meal</option>
+                            <option value="Raw Vegetables">🥦 Raw Vegetables</option>
+                            <option value="Fruits">🍎 Fruits</option>
+                            <option value="Packaged Food">📦 Packaged Food</option>
+                            <option value="Bread & Bakery">🍞 Bread &amp; Bakery</option>
+                            <option value="Dairy">🥛 Dairy Products</option>
+                            <option value="Others">🍽️ Others</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid-inline">
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-weight-scale"></i> Quantity *</label>
+                        <input type="text" class="form-input" id="quantity" placeholder="e.g., 5 kg or 20 servings"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label"><i class="fa-solid fa-hourglass-half"></i> Best Before /
+                            Expiry</label>
+                        <input type="text" class="form-input" id="expiryTime" placeholder="e.g., 3 hours, Tonight">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-location-dot"></i> Pickup Location
+                        (Confirmed)</label>
+                    <div class="pickup-confirmed">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span id="confirmedAddress">Loading your address...</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label"><i class="fa-solid fa-note-sticky"></i> Additional Notes</label>
+                    <textarea class="form-textarea" id="notes"
+                        placeholder="Any special instructions? (allergies, packing, stairs, etc.)"></textarea>
+                </div>
+                <button type="submit" class="btn-submit" id="donateBtn">
+                    <span class="btn-label"><i class="fa-solid fa-paper-plane"></i> Submit Donation Request</span>
+                    <div class="spinner"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ══════════ SUCCESS OVERLAY ══════════ -->
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-box">
+            <div class="success-icon"><i class="fa-solid fa-check"></i></div>
+            <h2>Donation Submitted! 🎉</h2>
+            <p>Your donation is logged. We're finding the nearest NGO right now.</p>
+            <div class="success-id" id="donationId">ID: #QD-XXXXXX</div>
+
+            <!-- NGO Wait Section -->
+            <div class="ngo-wait-section" id="ngoWaitSection">
+                <div class="radar-wrap">
+                    <div class="radar" id="radarEl">
+                        <div class="radar-ring"></div>
+                        <div class="radar-ring"></div>
+                        <div class="radar-ring"></div>
+                        <div class="radar-core"></div>
+                    </div>
+                </div>
+                <div class="ngo-status-label" id="ngoStatusLabel">🔍 Scanning for nearby NGOs...</div>
+                <div class="ngo-status-sub" id="ngoStatusSub">AI is matching your location with registered volunteers
+                </div>
+                <div class="countdown-bar-wrap">
+                    <div class="countdown-bar" id="countdownBar"></div>
+                </div>
+                <div class="countdown-text" id="countdownText">NGOs have <b id="countdownSecs">20</b>s to accept (demo
+                    mode)</div>
+                <button class="btn-fallback-trigger" id="btnSkipWait" style="display:none;">
+                    <i class="fa-solid fa-triangle-exclamation"></i> No NGO available — Find Nearby Drop Points
+                </button>
+            </div>
+
+            <div class="ngo-alert-row">
+                <i class="fa-solid fa-truck-fast"></i>
+                <div class="ngo-alert-text">
+                    <strong>NGO Volunteers Alerted 🏃</strong>
+                    <span>If accepted: pickup within 1–2 hours. SMS may be sent to <b id="confirmPhone">your
+                            number</b>.</span>
+                </div>
+            </div>
+
+            <div class="success-actions">
+                <button class="btn-again" id="donateAgainBtn"><i class="fa-solid fa-plus"></i> Donate More Food</button>
+                <button class="btn-home" onclick="window.location.href='../index.html'"><i
+                        class="fa-solid fa-house"></i> Back to Home</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════ SMART FALLBACK MODAL ══════════ -->
+    <div class="fallback-overlay" id="fallbackOverlay">
+        <div class="fallback-panel">
+            <!-- Header -->
+            <div class="fallback-header">
+                <div class="fh-inner">
+                    <div class="ai-badge"><i class="fa-solid fa-microchip"></i> AI Smart Suggestions</div>
+                    <h2>No NGO Available Nearby 🤖</h2>
+                    <p>To make sure your food reaches someone in need, our AI has identified the best high-footfall
+                        locations near you where you can distribute food directly.</p>
+                </div>
+            </div>
+
+            <!-- Warning strip -->
+            <div class="no-ngo-strip">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                <div class="no-ngo-strip-text">
+                    <strong>No NGO accepted within the time window.</strong>
+                    <span>Showing 3–5 nearest public distribution points to prevent food waste.</span>
+                </div>
+            </div>
+
+            <!-- Location list -->
+            <div class="fallback-body">
+                <div class="loc-section-title"><i class="fa-solid fa-location-dot" style="color:var(--red)"></i>
+                    Recommended Drop Points Near You</div>
+                <div id="locationList">
+                    <!-- Skeletons shown while fetching -->
+                    <div class="loc-skeleton">
+                        <div class="skel-icon"></div>
+                        <div class="skel-lines">
+                            <div class="skel-line"></div>
+                            <div class="skel-line short"></div>
+                        </div>
+                    </div>
+                    <div class="loc-skeleton">
+                        <div class="skel-icon"></div>
+                        <div class="skel-lines">
+                            <div class="skel-line"></div>
+                            <div class="skel-line short"></div>
+                        </div>
+                    </div>
+                    <div class="loc-skeleton">
+                        <div class="skel-icon"></div>
+                        <div class="skel-lines">
+                            <div class="skel-line"></div>
+                            <div class="skel-line short"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <div class="fallback-footer">
+                <button class="btn-maps-search" id="btnMapsSearch">
+                    <i class="fa-brands fa-google"></i> Search More on Google Maps
+                </button>
+                <button class="btn-close-fallback" id="btnCloseFallback">
+                    <i class="fa-solid fa-xmark"></i> Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"><i class="fa-solid fa-circle-check"></i><span id="toastText"></span></div>
+
+    <script>
+        const API = 'http://localhost:5000';
+
+        /* ─ Profile ─────────────────────────────── */
+        const phone = sessionStorage.getItem('qd_phone') || '';
+        const address = sessionStorage.getItem('qd_address') || '';
+        const name = sessionStorage.getItem('qd_name') || 'Anonymous Donor';
+
+        if (!phone && !address) window.location.href = '../quick-donate/index.html';
+
+        const initials = name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase() || 'AD';
+        document.getElementById('avatarInitial').textContent = initials;
+        document.getElementById('topbarName').textContent = name;
+        document.getElementById('bannerName').textContent = name.split(' ')[0];
+        document.getElementById('profileName').textContent = name;
+        document.getElementById('profilePhone').textContent = '+91 ' + phone;
+        document.getElementById('profileAddress').textContent = address;
+        document.getElementById('confirmedAddress').textContent = address;
+        document.getElementById('confirmPhone').textContent = '+91 ' + phone;
+
+        /* ─ Session ──────────────────────────────── */
+        async function checkSession() {
+            try {
+                const res = await fetch(`${API}/session-status`);
+                const data = await res.json();
+                const msg = document.getElementById('sessionMsg');
+                const badge = document.getElementById('sessionBadge');
+                if (data.allowed) {
+                    msg.textContent = `✅ Donations OPEN — ${data.session} window active`;
+                    badge.textContent = data.session + ' ✓';
+                    badge.className = 'session-badge open';
+                } else {
+                    msg.textContent = '⏰ Next window: Breakfast (7–10 AM) · Lunch (12–2 PM) · Dinner (7–10 PM)';
+                    badge.textContent = 'Currently Closed';
+                    badge.className = 'session-badge closed';
+                }
+            } catch {
+                document.getElementById('sessionMsg').textContent = 'Session info unavailable — donations may still be submitted.';
+                document.getElementById('sessionBadge').className = 'session-badge closed';
+            }
+        }
+        checkSession();
+
+        /* ─ Toast ────────────────────────────────── */
+        function showToast(msg, type = 'success') {
+            const t = document.getElementById('toast'), txt = document.getElementById('toastText');
+            t.className = 'toast ' + type;
+            t.querySelector('i').className = type === 'success' ? 'fa-solid fa-circle-check' : type === 'error' ? 'fa-solid fa-circle-xmark' : 'fa-solid fa-circle-info';
+            txt.textContent = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3200);
+        }
+
+        /* ─ Confetti ─────────────────────────────── */
+        function launchConfetti() {
+            const cols = ['#2ecc71', '#f39c12', '#9b59b6', '#3498db', '#e74c3c', '#1abc9c'];
+            for (let i = 0; i < 80; i++) {
+                const el = document.createElement('div');
+                el.className = 'confetti-piece';
+                el.style.cssText = `left:${Math.random() * 100}vw;top:-10px;background:${cols[Math.floor(Math.random() * cols.length)]};animation-delay:${Math.random() * 1.5}s;animation-duration:${2 + Math.random() * 2}s;width:${6 + Math.random() * 8}px;height:${6 + Math.random() * 8}px;border-radius:${Math.random() > .5 ? '50%' : '2px'};`;
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 4000);
+            }
+        }
+
+        /* ─ NGO Countdown ────────────────────────── */
+        const COUNTDOWN_SECS = 20; // 20s demo; real = 15*60
+        let countdownInterval = null;
+        let donorLat = null, donorLon = null;
+
+        // Try to get geolocation immediately so it's ready when fallback triggers
+        navigator.geolocation && navigator.geolocation.getCurrentPosition(
+            pos => { donorLat = pos.coords.latitude; donorLon = pos.coords.longitude; },
+            () => { }
+        );
+
+        function startNGOCountdown() {
+            let remaining = COUNTDOWN_SECS;
+            const bar = document.getElementById('countdownBar');
+            const secsEl = document.getElementById('countdownSecs');
+            const skipBtn = document.getElementById('btnSkipWait');
+
+            bar.style.width = '100%';
+            bar.style.transition = 'none';
+            setTimeout(() => { bar.style.transition = `width ${COUNTDOWN_SECS}s linear`; bar.style.width = '0%'; }, 50);
+
+            countdownInterval = setInterval(() => {
+                remaining--;
+                if (secsEl) secsEl.textContent = remaining;
+                if (remaining <= 10) {
+                    bar.classList.add('orange');
+                    document.getElementById('ngoStatusLabel').textContent = '⏳ Still searching for an NGO...';
+                    document.getElementById('ngoStatusSub').textContent = 'No response yet. Smart suggestions ready if needed.';
+                    if (remaining <= 5) skipBtn.style.display = 'flex';
+                }
+                if (remaining <= 0) {
+                    clearInterval(countdownInterval);
+                    triggerFallback();
+                }
+            }, 1000);
+        }
+
+        function triggerFallback() {
+            clearInterval(countdownInterval);
+            // Update radar to orange
+            const radar = document.getElementById('radarEl');
+            if (radar) radar.classList.add('timeout');
+            const wait = document.getElementById('ngoWaitSection');
+            if (wait) wait.classList.add('timeout');
+            document.getElementById('ngoStatusLabel').textContent = '❌ No NGO Available Nearby';
+            document.getElementById('ngoStatusSub').textContent = 'Opening AI Smart Suggestions...';
+            document.getElementById('btnSkipWait').style.display = 'none';
+            // Brief delay then open fallback modal
+            setTimeout(() => openFallbackModal(), 1200);
+        }
+
+        document.getElementById('btnSkipWait').addEventListener('click', triggerFallback);
+
+        /* ─ Fallback Modal ───────────────────────── */
+        function openFallbackModal() {
+            document.getElementById('successOverlay').classList.remove('show');
+            document.getElementById('fallbackOverlay').classList.add('show');
+            fetchNearbyLocations();
+        }
+
+        document.getElementById('btnCloseFallback').addEventListener('click', () => {
+            document.getElementById('fallbackOverlay').classList.remove('show');
+        });
+
+        /* ─ Haversine distance (km) ──────────────── */
+        function haversine(lat1, lon1, lat2, lon2) {
+            const R = 6371, dLat = (lat2 - lat1) * Math.PI / 180, dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) ** 2 + Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * Math.sin(dLon / 2) ** 2;
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        }
+
+        /* ─ Location type helpers ─────────────────── */
+        const TYPE_CONFIG = {
+            'railway_station': { icon: 'fa-train', cls: 'li-train', label: 'Railway Station', search: 'railway station' },
+            'bus_station': { icon: 'fa-bus', cls: 'li-bus', label: 'Bus Station', search: 'bus terminal' },
+            'bus_stop': { icon: 'fa-bus-simple', cls: 'li-bus', label: 'Bus Stop', search: 'bus stop' },
+            'place_of_worship': { icon: 'fa-place-of-worship', cls: 'li-temple', label: 'Temple / Masjid', search: 'temple' },
+            'shelter': { icon: 'fa-house-chimney', cls: 'li-shelter', label: 'Shelter / Home', search: 'shelter' },
+            'community_centre': { icon: 'fa-people-roof', cls: 'li-community', label: 'Community Centre', search: 'community centre' },
+            'social_facility': { icon: 'fa-hands-holding-child', cls: 'li-community', label: 'Social Facility', search: 'social facility' },
+            'food_bank': { icon: 'fa-hand-holding-heart', cls: 'li-food', label: 'Food Bank', search: 'food bank' },
+            'default': { icon: 'fa-location-dot', cls: 'li-shelter', label: 'Public Place', search: 'public place' },
+        };
+
+        function getTypeConfig(tags) {
+            if (tags.railway === 'station') return TYPE_CONFIG['railway_station'];
+            if (tags.amenity) return TYPE_CONFIG[tags.amenity] || TYPE_CONFIG['default'];
+            return TYPE_CONFIG['default'];
+        }
+
+        function estimatedWalkTime(km) { return Math.ceil(km / 0.08); } // ~5km/h walking → 0.083km/min
+
+        /* ─ Overpass API fetch ───────────────────── */
+        async function fetchNearbyLocations() {
+            const list = document.getElementById('locationList');
+
+            // Use demo coordinates (Bengaluru) if geolocation unavailable
+            const lat = donorLat ?? 12.9716;
+            const lon = donorLon ?? 77.5946;
+
+            const overpassQuery = `
+    [out:json][timeout:15];
+    (
+      node["railway"="station"](around:5000,${lat},${lon});
+      node["amenity"="bus_station"](around:4000,${lat},${lon});
+      node["amenity"="bus_stop"](around:1500,${lat},${lon});
+      node["amenity"="place_of_worship"](around:2000,${lat},${lon});
+      node["amenity"="shelter"](around:3000,${lat},${lon});
+      node["amenity"="community_centre"](around:3000,${lat},${lon});
+      node["amenity"="social_facility"](around:3000,${lat},${lon});
+      node["amenity"="food_bank"](around:5000,${lat},${lon});
+    );
+    out body;
+  `;
+
+            try {
+                const res = await fetch('https://overpass-api.de/api/interpreter', {
+                    method: 'POST',
+                    body: 'data=' + encodeURIComponent(overpassQuery)
+                });
+                const data = await res.json();
+                const elements = data.elements || [];
+
+                // Filter to named places, compute distance, sort by distance
+                const places = elements
+                    .filter(el => el.tags && (el.tags.name || el.tags['name:en']))
+                    .map(el => {
+                        const dist = haversine(lat, lon, el.lat, el.lon);
+                        return { ...el, dist };
+                    })
+                    .sort((a, b) => a.dist - b.dist);
+
+                // De-duplicate by name
+                const seen = new Set();
+                const unique = places.filter(p => {
+                    const n = (p.tags.name || '').toLowerCase().trim();
+                    if (!n || seen.has(n)) return false;
+                    seen.add(n); return true;
+                }).slice(0, 5);
+
+                if (unique.length === 0) {
+                    renderFallbackSuggestions([], lat, lon);
+                } else {
+                    renderFallbackSuggestions(unique, lat, lon);
+                }
+
+                // Set Google Maps search button
+                document.getElementById('btnMapsSearch').onclick = () =>
+                    window.open(`https://www.google.com/maps/search/food+donation+points/@${lat},${lon},14z`, '_blank');
+
+            } catch (err) {
+                // Fallback to curated suggestions using Google Maps search URLs
+                renderFallbackSuggestions([], lat, lon);
+            }
+        }
+
+        const RANK_COLORS = ['r1', 'r2', 'r3', 'r4', 'r5'];
+
+        function renderFallbackSuggestions(places, lat, lon) {
+            const list = document.getElementById('locationList');
+
+            if (places.length === 0) {
+                // Curated fallback: construct category search links
+                const categories = [
+                    { name: 'Railway Station', icon: 'fa-train', cls: 'li-train', search: 'railway station', label: 'Railway Station' },
+                    { name: 'Bus Terminal', icon: 'fa-bus', cls: 'li-bus', search: 'bus terminal', label: 'Bus Stand' },
+                    { name: 'Temple / Masjid', icon: 'fa-place-of-worship', cls: 'li-temple', search: 'temple food distribution', label: 'Place of Worship' },
+                    { name: 'Shelter / Night Refuge', icon: 'fa-house-chimney', cls: 'li-shelter', search: 'shelter home', label: 'Shelter' },
+                    { name: 'Community Kitchen', icon: 'fa-people-roof', cls: 'li-community', search: 'community centre kitchen', label: 'Community Centre' },
+                ];
+
+                list.innerHTML = categories.map((c, i) => `
+      <div class="loc-card">
+        <span class="loc-rank ${RANK_COLORS[i] || ''}">${i + 1}</span>
+        <div class="loc-icon-wrap ${c.cls}"><i class="fa-solid ${c.icon}"></i></div>
+        <div class="loc-info">
+          <div class="loc-name">${c.name}</div>
+          <div class="loc-meta">
+            <span class="loc-type-badge">${c.label}</span>
+            <span class="loc-dist"><i class="fa-solid fa-circle"></i> Near your location</span>
+          </div>
+        </div>
+        <button class="btn-navigate" onclick="window.open('https://www.google.com/maps/search/${encodeURIComponent(c.search)}/@${lat},${lon},14z','_blank')">
+          <i class="fa-brands fa-google"></i> Find on Maps
+        </button>
+      </div>`).join('');
+                return;
+            }
+
+            list.innerHTML = places.map((p, i) => {
+                const tc = getTypeConfig(p.tags);
+                const displayName = p.tags.name || p.tags['name:en'] || 'Public Place';
+                const distKm = p.dist < 1 ? (p.dist * 1000).toFixed(0) + ' m' : p.dist.toFixed(1) + ' km';
+                const walkMin = estimatedWalkTime(p.dist);
+                const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lon}&travelmode=driving`;
+                return `
+      <div class="loc-card">
+        <span class="loc-rank ${RANK_COLORS[i] || ''}">${i + 1}</span>
+        <div class="loc-icon-wrap ${tc.cls}"><i class="fa-solid ${tc.icon}"></i></div>
+        <div class="loc-info">
+          <div class="loc-name" title="${displayName}">${displayName}</div>
+          <div class="loc-meta">
+            <span class="loc-type-badge">${tc.label}</span>
+            <span class="loc-dist"><i class="fa-solid fa-circle"></i> ${distKm}</span>
+            <span class="loc-time"><i class="fa-solid fa-clock"></i> ~${walkMin} min walk</span>
+          </div>
+        </div>
+        <button class="btn-navigate" onclick="window.open('${mapsUrl}','_blank')">
+          <i class="fa-brands fa-google"></i> Navigate
+        </button>
+      </div>`;
+            }).join('');
+        }
+
+        /* ─ Donate Form Submit ────────────────────── */
+        const form = document.getElementById('donateForm');
+        const btn = document.getElementById('donateBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const foodItem = document.getElementById('foodItem').value.trim();
+            const type = document.getElementById('foodType').value;
+            const quantity = document.getElementById('quantity').value.trim();
+            const expiryTime = document.getElementById('expiryTime').value.trim();
+            const notes = document.getElementById('notes').value.trim();
+
+            if (!foodItem) { showToast('Please enter the food item name.', 'error'); return; }
+            if (!type) { showToast('Please select a food type.', 'error'); return; }
+            if (!quantity) { showToast('Please enter the quantity.', 'error'); return; }
+
+            btn.classList.add('loading');
+
+            const payload = {
+                donorName: name, phone, address, foodItem, type, quantity, expiryTime, notes, donorType: 'quick_donor',
+                lat: donorLat, lon: donorLon
+            };
+
+            try {
+                const res = await fetch(`${API}/quick-donate`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                const data = await res.json();
+                btn.classList.remove('loading');
+                if (data.success) {
+                    const id = data.id ? String(data.id).slice(-6).toUpperCase() : Math.random().toString(36).slice(-6).toUpperCase();
+                    document.getElementById('donationId').textContent = 'ID: #QD-' + id;
+                    launchConfetti();
+                    document.getElementById('successOverlay').classList.add('show');
+                    startNGOCountdown();
+                } else {
+                    showToast(data.message || 'Submission failed. Please try again.', 'error');
+                }
+            } catch {
+                btn.classList.remove('loading');
+                const id = Math.random().toString(36).slice(-6).toUpperCase();
+                document.getElementById('donationId').textContent = 'ID: #QD-' + id + ' (Queued)';
+                launchConfetti();
+                document.getElementById('successOverlay').classList.add('show');
+                startNGOCountdown();
+            }
+        });
+
+        /* ─ Donate Again ──────────────────────────── */
+        document.getElementById('donateAgainBtn').addEventListener('click', () => {
+            clearInterval(countdownInterval);
+            document.getElementById('successOverlay').classList.remove('show');
+            document.getElementById('fallbackOverlay').classList.remove('show');
+            form.reset();
+            document.getElementById('confirmedAddress').textContent = address;
+            // Reset radar & countdown
+            const bar = document.getElementById('countdownBar');
+            bar.style.transition = 'none'; bar.style.width = '100%';
+            bar.classList.remove('orange');
+            document.getElementById('radarEl').classList.remove('timeout');
+            document.getElementById('ngoWaitSection').classList.remove('timeout');
+            document.getElementById('ngoStatusLabel').textContent = '🔍 Scanning for nearby NGOs...';
+            document.getElementById('ngoStatusSub').textContent = 'AI is matching your location with registered volunteers';
+            document.getElementById('btnSkipWait').style.display = 'none';
+            document.getElementById('countdownSecs').textContent = COUNTDOWN_SECS;
+        });
+    </script>
+</body>
+
+</html>

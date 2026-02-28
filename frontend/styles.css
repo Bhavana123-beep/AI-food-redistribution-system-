@@ -137,6 +137,95 @@ h4 {
     background: var(--primary-green-light);
 }
 
+/* ── Quick Donate Buttons ──────────────────────── */
+.btn-quick {
+    background: linear-gradient(135deg, #f39c12, #e67e22);
+    color: var(--white);
+    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.35);
+    border: none;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    animation: quickGlow 2.5s ease-in-out infinite alternate;
+}
+
+.btn-quick:hover {
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 8px 24px rgba(243, 156, 18, 0.5);
+    background: linear-gradient(135deg, #e67e22, #d35400);
+}
+
+@keyframes quickGlow {
+    from {
+        box-shadow: 0 4px 15px rgba(243, 156, 18, 0.35);
+    }
+
+    to {
+        box-shadow: 0 6px 22px rgba(243, 156, 18, 0.65);
+    }
+}
+
+.btn-quick-hero {
+    background: linear-gradient(135deg, #ff6b35, #f39c12);
+    color: var(--white);
+    border: none;
+    font-weight: 700;
+    box-shadow: 0 6px 20px rgba(255, 107, 53, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-quick-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.btn-quick-hero:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 30px rgba(255, 107, 53, 0.55);
+}
+
+.btn-quick-hero:hover::before {
+    opacity: 1;
+}
+
+.btn-quick-cta {
+    background: rgba(255, 255, 255, 0.95);
+    color: #e67e22;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    font-weight: 800;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.btn-quick-cta:hover {
+    background: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+/* ── Quick Donate notice strip ────────────────── */
+.quick-donate-notice {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(243, 156, 18, 0.08);
+    border: 1px solid rgba(243, 156, 18, 0.2);
+    border-radius: 50px;
+    padding: 8px 18px;
+    font-size: 0.87rem;
+    color: #b7770d;
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.quick-donate-notice i {
+    color: var(--primary-orange);
+    font-size: 0.9rem;
+}
+
 /* Navbar */
 .navbar {
     position: fixed;
