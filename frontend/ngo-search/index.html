@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGO Search - AI Food Rescue</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS from dashboard base + specific map styles -->
+    <link rel="stylesheet" href="../donor-dashboard/styles.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="../index.html" class="logo">
+                <i class="fa-solid fa-leaf"></i> Food<span>Rescue</span>
+            </a>
+            <button class="close-sidebar-btn" id="closeSidebarBtn">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <div class="user-profile-sm">
+            <div class="avatar">OM</div>
+            <div class="user-info">
+                <h4>Oasis Meals</h4>
+                <p>Restaurant Donor</p>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="../donor-dashboard/index.html"><i class="fa-solid fa-chart-pie"></i> Dashboard</a></li>
+                <li><a href="../history-page/index.html"><i class="fa-solid fa-clock-rotate-left"></i> Donation
+                        History</a></li>
+                <li><a href="../live-tracking/index.html"><i class="fa-solid fa-chart-line"></i> Live Tracking</a></li>
+                <li class="active"><a href="../ngo-search/index.html"><i class="fa-solid fa-map-location-dot"></i> NGO
+                        Search</a></li>
+                <li><a href="../notifications/index.html"><i class="fa-solid fa-bell"></i> Notifications <span
+                            class="badge">2</span></a></li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
+            <a href="../login/index.html" class="logout"><i class="fa-solid fa-arrow-right-from-bracket"></i> Logout</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" id="mainContent">
+
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <button class="menu-trigger" id="menuTriggerBtn">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div class="greeting">
+                    <h2>Find Nearest NGOs 🗺️</h2>
+                    <p>Search for partner NGOs to direct your food donations.</p>
+                </div>
+            </div>
+
+            <div class="header-right" style="display:flex; align-items:center; gap:15px;">
+                <button class="btn btn-outline" id="useLocationBtn">
+                    <i class="fa-solid fa-location-crosshairs"></i> Use My Location
+                </button>
+                <div class="profile-dropdown">
+                    <div class="avatar-sm">OM</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- NGO Search Content Layout -->
+        <div class="ngo-search-container">
+
+            <!-- Sidebar for Search and List -->
+            <div class="search-panel glass-effect">
+                <div class="search-box">
+                    <i class="fa-solid fa-magnifying-glass search-icon"></i>
+                    <input type="text" id="searchInput" placeholder="Search by city, area, or zip code...">
+                    <button id="clearSearchBtn" class="clear-btn" style="display:none;"><i
+                            class="fa-solid fa-xmark"></i></button>
+                </div>
+
+                <div class="filters">
+                    <span class="filter-chip active">All</span>
+                    <span class="filter-chip">Open Now</span>
+                    <span class="filter-chip">Accepts Cooked Food</span>
+                </div>
+
+                <div class="ngo-list-header">
+                    <h3 id="resultCount">Loading NGOs...</h3>
+                </div>
+
+                <div class="ngo-list" id="ngoList">
+                    <!-- NGO Items populated by JS -->
+                </div>
+            </div>
+
+            <!-- Map Area -->
+            <div class="map-container glass-effect">
+                <div id="map"></div>
+                <!-- Loading Overlay -->
+                <div id="mapLoader" class="map-loader">
+                    <div class="spinner"></div>
+                    <p>Loading Map...</p>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Google Maps API Key -->
+    <!-- Replace YOUR_API_KEY with your actual Maps API Key -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places,geometry"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
