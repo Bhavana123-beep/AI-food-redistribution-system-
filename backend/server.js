@@ -104,29 +104,7 @@ app.get("/health", (req, res) =>
 
 app.get("/session-status", (req, res) => res.json(getSessionInfo()));
 
-// ── Quick Donate (no auth, no account needed) ─────────────────
-app.post("/quick-donate", async (req, res) => {
-  try {
-    const { phone, address, donorName, foodItem, type, quantity, expiryTime } = req.body;
-    if (!phone || !address || !foodItem || !quantity) {
-      return res.status(400).json({ success: false, message: "Phone, address, food item and quantity are required." });
-    }
-    const donation = {
-      donorType: 'quick_donor',
-      donorName: donorName || 'Anonymous',
-      phone, address,
-      foodItem, type: type || 'Others', quantity, expiryTime: expiryTime || '',
-      status: 'Pending AI Match',
-      createdAt: new Date().toISOString()
-    };
-    const ref = db.ref("donations").push();
-    await ref.set(donation);
-    res.status(201).json({ success: true, message: "Quick donation submitted! NGOs near you have been notified.", id: ref.key });
-  } catch (error) {
-    console.error("Quick Donate Error:", error);
-    res.status(500).json({ success: false, message: "Server error. Please try again." });
-  }
-});
+
 
 // Register
 app.post("/register", dbReady, async (req, res) => {
